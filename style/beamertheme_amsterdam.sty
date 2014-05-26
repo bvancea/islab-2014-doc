@@ -1,0 +1,69 @@
+\DeclareOptionBeamer{compress}{\beamer@compresstrue}
+\ProcessOptionsBeamer
+
+\mode<presentation>
+
+
+\useoutertheme[footline=authortitle]{miniframes}
+\useinnertheme{circles}
+\usecolortheme{whale}
+\usecolortheme{orchid}
+
+\definecolor{beamer@blendedblue}{rgb}{0.137,0.466,0.741}
+
+\setbeamercolor{structure}{fg=beamer@blendedblue}
+\setbeamercolor{titlelike}{parent=structure}
+\setbeamercolor{frametitle}{fg=black}
+\setbeamercolor{title}{fg=black}
+\setbeamercolor{item}{fg=black}
+\setbeamercolor{description item}{fg=beamer@blendedblue}
+
+% removes bullets for subsections in the header
+\setbeamertemplate{headline}
+{%
+  \begin{beamercolorbox}[ht=3.5ex,dp=1.125ex,%
+      leftskip=.0cm,rightskip=.3cm plus1fil]{section in head/foot}
+    \usebeamerfont{section in head/foot}\usebeamercolor[fg]{section in head/foot}%
+    % \insertsectionhead
+    \insertsectionnavigationhorizontal{\textwidth}{}{}
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[colsep=1.5pt]{middle separation line head}
+  \end{beamercolorbox}
+  \begin{beamercolorbox}[ht=2.5ex,dp=1.125ex,%
+    leftskip=.3cm,rightskip=.3cm plus1fil]{subsection in head/foot}
+    \usebeamerfont{subsection in head/foot}\insertsubsectionhead
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[colsep=1.5pt]{lower separation line head}
+  \end{beamercolorbox}
+}
+
+%insert slide number
+\setbeamertemplate{footline}
+{%
+    \begin{beamercolorbox}[colsep=1.5pt]{upper separation line foot}
+    \end{beamercolorbox}
+    \begin{beamercolorbox}[ht=2.5ex,dp=1.125ex,%
+      leftskip=.3cm,rightskip=.3cm plus1fil]{title in head/foot}%
+      \leavevmode{\usebeamerfont{title in head/foot}\insertshorttitle}%
+      \hfill%
+      {\usebeamerfont{author in head/foot}\usebeamercolor[fg]{author in head/foot}\insertshortauthor}%
+      \hfill%
+      {\usebeamerfont{frame number}\usebeamercolor[fg]{frame number}\insertframenumber/\inserttotalframenumber}
+
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[colsep=1.5pt]{lower separation line foot}
+    \end{beamercolorbox}
+  }
+
+%adjust toc: remove bullet points, section titles black
+\setbeamerfont{section number projected}{%
+ size=\normalsize}
+\setbeamercolor{section number projected}{bg=white,fg=beamer@blendedblue}
+\setbeamercolor{section in toc}{fg=black}
+
+%no enumeration bullet points
+\setbeamertemplate{enumerate items}[default]
+
+
+\mode
+<all>
