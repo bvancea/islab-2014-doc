@@ -21,18 +21,38 @@
   \begin{section}{What is...?}
     \begin{frame}
       \frametitle{ZooDB}
+      \begin{itemize}
+        \item an open source object database in Java
+        \item JDO standard
+        \item 4 times faster than competitor db4o
+      \end{itemize}
+
     \end{frame}
     \begin{frame}
       \frametitle{Index}
     \end{frame}
     \begin{frame}
       \frametitle{BTree}
+        \begin{itemize}
+          \item node fills one page
+          \item unique vs. non-unique
+        \end{itemize}
+      \frametitle{Example: insert}
+        \begin{itemize}
+          \item node fills one page
+          \item unique vs. non-unique
+        \end{itemize}
     \end{frame}
   \end{section}
 
   \begin{section}{Challenges}
     \begin{frame}
-      \frametitle{Challenges}
+      \frametitle{Optimizations}
+        \begin{itemize}
+          \item runtime dominated by disk access
+          \item should not change a node to often
+          \item support different key-value sizes
+        \end{itemize}
     \end{frame}
   \end{section}
 
@@ -47,7 +67,19 @@
 
   \begin{section}{Benchmarks}
     \begin{frame}
-      \frametitle{Benchmarks}
+      \frametitle{Fine grained}
+        \begin{itemize}
+          \item insert, remove, write
+          \item duration, number of nodes
+          \item prefix-sharing vs. no prefix-sharing
+        \end{itemize}
+    \end{frame}
+    \begin{frame}
+      \frametitle{Whole system}
+        \begin{itemize}
+          \item test harness
+          \item PolePosition benchmark
+        \end{itemize}
     \end{frame}
   \end{section}
 
