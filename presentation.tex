@@ -8,7 +8,7 @@
 \usepackage{tikz}
 \usepackage{pbox}
 
-\title{Design of an Index for ZooDB}
+\title{Designing an Index for ZooDB}
 %\subtitle{}
 \author{Jonas Nick \& Bogdan Vancea}
 \begin{document}
@@ -25,38 +25,67 @@
         \item an open source object database in Java
         \item JDO standard
         \item 4 times faster than competitor db4o
+        \item \url{github.com/tzaeschke/zoodb}
       \end{itemize}
 
     \end{frame}
     \begin{frame}
       \frametitle{Index}
+      \begin{block}{}
+        datastructure that allows rapid lookup
+      \end{block}
+      \begin{itemize}
+        \item where indices are used in zoodb
+      \end{itemize}
     \end{frame}
     \begin{frame}
-      \frametitle{BTree}
-        \begin{itemize}
-          \item node fills one page
-          \item unique vs. non-unique
-        \end{itemize}
+      \frametitle{B+ Tree}
+      \begin{itemize}
+        \item node fills one disk page
+        \item inner node contains keys and children pointer, leaves contain keys and values
+        \item key unique vs. key-value unique
+      \end{itemize}
+    \end{frame}
+    \begin{frame}
       \frametitle{Example: insert}
-        \begin{itemize}
-          \item node fills one page
-          \item unique vs. non-unique
-        \end{itemize}
-    \end{frame}
-  \end{section}
-
-  \begin{section}{Challenges}
-    \begin{frame}
-      \frametitle{Optimizations}
-        \begin{itemize}
-          \item runtime dominated by disk access
-          \item should not change a node to often
-          \item support different key-value sizes
-        \end{itemize}
     \end{frame}
   \end{section}
 
   \begin{section}{The new Index Implementation}
+    3908 loc + 2665 loc of test
+    \begin{frame}
+      \frametitle{Goals}
+        \begin{itemize}
+          \item faster
+          \item buffer manager
+          \item prefix sharing
+        \end{itemize}
+    \end{frame}
+    \begin{frame}
+      \frametitle{Challenges}
+        \begin{itemize}
+          \item edge cases
+          \item runtime dominated by disk access
+          \begin{itemize}
+            \item change nodes infrequently
+            \item fewer nodes is better
+          \end{itemize}
+          \item only parent to child pointer
+          \item determine best when its time to split/redistribute
+          \item key unique vs. key-value unique
+          \item buffer manager lookup takes time 
+          \item prefix-sharing encoding/decoding takes time
+          \item prefix-sharing rebalancing takes time
+          \item general optimizations
+            \begin{itemize}
+              \item avoid polymorphism
+              \item bit-level operations
+            \end{itemize}
+        \end{itemize}
+    \end{frame}
+    \begin{frame}
+      \frametitle{Our B+ Tree}
+    \end{frame}
     \begin{frame}
       \frametitle{Buffer Manager}
     \end{frame}
@@ -64,6 +93,13 @@
       \frametitle{Prefix Sharing}
     \end{frame}
   \end{section}
+
+  \begin{section}{Challenges}
+    \begin{frame}
+      \frametitle{Optimizations}
+    \end{frame}
+  \end{section}
+
 
   \begin{section}{Benchmarks}
     \begin{frame}
@@ -79,6 +115,7 @@
         \begin{itemize}
           \item test harness
           \item PolePosition benchmark
+          \item StackOverflow
         \end{itemize}
     \end{frame}
   \end{section}
