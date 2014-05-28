@@ -7,6 +7,19 @@
 \usepackage{natbib}
 \usepackage{tikz}
 \usepackage{pbox}
+\usepackage{listings}
+\lstset{language=Java} 
+\usepackage{mdframed}
+\mdfdefinestyle{IndexFrame}{%
+    linecolor=blue,
+    outerlinewidth=2pt,
+    roundcorner=20pt,
+    innertopmargin=\baselineskip,
+    innerbottommargin=\baselineskip,
+    innerrightmargin=20pt,
+    innerleftmargin=20pt
+    innermargin=10pt
+    }
 
 \title{Designing an Index for ZooDB}
 %\subtitle{}
@@ -30,13 +43,24 @@
 
     \end{frame}
     \begin{frame}
-      \frametitle{Index}
+      \frametitle{Database Index}
       \begin{block}{}
-        datastructure that allows rapid lookup
+          Key-Value datastructure that allows ordered iteration.
       \end{block}
-      \begin{itemize}
-        \item where indices are used in zoodb
-      \end{itemize}
+      \vspace{1em}
+      % Example: \lstinline|ZooJdoHelper.createIndex(pm, Person.class, "name", false);|
+      \pause
+      Example: \\
+      \texttt{ZooJdoHelper.createIndex(pm, Person.class, "name", false);}
+      \pause
+      \begin{align*}
+      \fbox{\parbox[t][3em][c]{0.29\textwidth}{Attribute \\ Value $\rightarrow$ Object-ID} }
+      \end{align*}
+      \pause
+      \begin{center}
+      \fbox{\parbox[t][3em][c]{0.29\textwidth}{OID \\ Object-ID $\rightarrow$ Diskpos} }
+      \fbox{\parbox[t][3em][c]{0.29\textwidth}{FSM \\ Page-ID $\rightarrow$ TxID} }
+      \end{center}
     \end{frame}
     \begin{frame}
       \frametitle{B+ Tree}
@@ -91,6 +115,15 @@
     % \end{frame}
     \begin{frame}
       \frametitle{Prefix Sharing}
+      \setbeamercovered{invisible}
+      \begin{tikzpicture}
+        \node[draw,align=left] at (0,2) {00010000\\ 00010100\\ 00010110};
+        \onslide<2->{\draw (0.2,1) -- (0.2,3);}
+      \end{tikzpicture}
+      \pause
+      \begin{tikzpicture}
+        \onslide<3->{\node[draw,align=right] at (0,2) {00010\\ 000\\100\\110};}
+      \end{tikzpicture}
     \end{frame}
   \end{section}
 
