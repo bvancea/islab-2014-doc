@@ -35,8 +35,8 @@
     \begin{frame}
       \frametitle{ZooDB}
       \begin{itemize}
-        \item an open source object database in Java
-        \item JDO standard
+        \item an open source object database written in Java
+        \item JDO standard compliant
         \item 4 times faster than competitor db4o
         \item \url{zoodb.org}
       \end{itemize}
@@ -80,13 +80,13 @@
     \begin{frame}
       \frametitle{Goals}
         \begin{itemize}
-          \item faster
-          \item buffer manager
+          \item fast B+ tree index
+          \item buffer manager to allow caching
           \item prefix sharing
         \end{itemize}
     \end{frame}
     \begin{frame}
-      \frametitle{Challenges}
+      \frametitle{Challenges - General}
         \begin{itemize}
           \item edge cases
           \item runtime dominated by disk access
@@ -107,9 +107,7 @@
             \end{itemize}
         \end{itemize}
     \end{frame}
-    \begin{frame}
-      \frametitle{Our B+ Tree}
-    \end{frame}
+    
     % \begin{frame}
     %   \frametitle{Buffer Manager}
     % \end{frame}
@@ -124,6 +122,55 @@
       \begin{tikzpicture}
         \onslide<3->{\node[draw,align=right] at (0,2) {00010\\ 000\\100\\110};}
       \end{tikzpicture}
+    \end{frame}
+    \begin{frame}
+      \frametitle{Prefix Sharing}
+      \begin{block} {Normal storage of a list of words}
+      [skydive, skyline, skyscraper] 
+      \end{block}
+      \begin{block} {Can exploit common prefix}
+      sky + [dive, line, scaper]
+      \end{block}
+      This trick can also be applied on bit srings
+    \end{frame}
+    \begin{frame}
+        \frametitle{Challenges - Prefix Sharing}
+        \begin{itemize}
+            \item variable number of key-value entries per page
+            \item prefix determines
+            \begin{itemize}
+                \item if 2 nodes can be merged without overflow
+                \item the number of entries that can be redistributed from one node to the other
+            \end{itemize}
+        \end{itemize}    
+    \end{frame}
+    \begin{frame}
+      \frametitle{Our B+ Tree}
+      \begin{itemize}
+        \item 64 bit keys and 64 bit values
+        \item key unique and key non-unique variants
+        \item keys encoded based on common bit prefix
+      \end{itemize}
+    \end{frame}
+    \begin{frame}
+        \frametitle{Class Diagram}
+        Make it and add it here    
+    \end{frame}
+    \begin{frame}
+        \frametitle{Operations}
+        \begin{itemize}
+        \item Search - Similar to normal B+ Tree
+        \item Insert overflow
+            \begin{itemize}
+            \item attempt to redistribute values to left sibling before creating a new node
+            \end{itemize}
+        \item Delete underflow
+            \begin{itemize}
+            \item check if possible to merge with left or right neighbour
+            \item check if possible to split current node between left and right
+            \item redistribute from left or right
+            \end{itemize}
+        \end{itemize}
     \end{frame}
   \end{section}
 
