@@ -9,6 +9,7 @@
 \usepackage{tikz}
 \usepackage{pbox}
 \usepackage{listings}
+\usepackage[export]{adjustbox}
 \lstset{language=Java} 
 \usepackage{mdframed}
 \mdfdefinestyle{IndexFrame}{%
@@ -47,7 +48,7 @@
     \begin{frame}
       \frametitle{Database Index}
       \begin{block}{}
-          Key-Value datastructure that allows ordered iteration.
+          Key-Value datastructure that allows for ordered iteration.
       \end{block}
       \vspace{1em}
       % Example: \lstinline|ZooJdoHelper.createIndex(pm, Person.class, "name", false);|
@@ -66,6 +67,9 @@
     \end{frame}
     \begin{frame}
       \frametitle{B+ Tree}
+      \vspace{-3em}
+      \includegraphics[scale=0.2]{images/B+Tree.png}
+      \vspace{1em}
       \begin{itemize}
         \item node fills one disk page
         \item inner node contains keys and children pointer, leaves contain keys and values
@@ -73,7 +77,28 @@
       \end{itemize}
     \end{frame}
     \begin{frame}
-      \frametitle{Example: insert}
+      \frametitle{Example: insert $(8,v)$}
+      \vspace{-1em}
+      \begin{center}
+      \includegraphics[scale=0.17]{images/B+Tree.png}
+      \end{center}
+      \pause
+
+      \vspace{-2em}
+      \begin{figure}[!ht]
+        \centering
+        \begin{center}
+          \includegraphics[valign=t,scale=0.15]{images/B+Tree_op1.png}
+          \quad
+          \pause
+          \includegraphics[valign=t,scale=0.15]{images/B+Tree_op2.png}
+        \end{center}
+      \end{figure}
+      \pause
+
+      \begin{center}
+      \includegraphics[scale=0.2]{images/B+Tree_op3.png}
+      \end{center}
     \end{frame}
   \end{section}
 
