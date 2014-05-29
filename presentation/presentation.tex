@@ -207,8 +207,10 @@
       \begin{figure}
         \includegraphics[scale=0.3]{images/unique_random_insert.png}
         \quad
+        \pause
         \includegraphics[scale=0.3]{images/nonUnique_random_insert_nodes.png}
       \end{figure}
+      \pause
         \begin{itemize}
           \item in every microbenchmark the new index is significantly slower
           \item in most microbenchmarks there s a significantly lower number of nodes
@@ -226,12 +228,13 @@
     \end{frame}
 
     \begin{frame}
-      \frametitle{Whole system}
-        \begin{itemize}
-          % \item test harness
-          % \item partial PolePosition benchmark
-          \item StackOverflow
-        \end{itemize}
+      \frametitle{StackOverflow Import}
+        \begin{figure}
+          \includegraphics[scale=0.3]{images/SO_sizes.png}
+          \quad
+          \pause
+          \includegraphics[scale=0.3]{images/SO_commit_duration.png}
+        \end{figure}
     \end{frame}
   \end{section}
 
