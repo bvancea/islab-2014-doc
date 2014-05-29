@@ -31,7 +31,7 @@
     \tableofcontents[hideallsubsections]
   \end{frame}
 
-  \begin{section}{What is...?}
+  \begin{section}{Introduction}
     \begin{frame}
       \frametitle{ZooDB}
       \begin{itemize}
@@ -114,27 +114,29 @@
     \begin{frame}
       \frametitle{Prefix Sharing}
       \setbeamercovered{invisible}
+      \begin{block} {Exploit common prefix of keys in nodes}
       \begin{tikzpicture}
         \node[draw,align=left] at (0,2) {00010000\\ 00010100\\ 00010110};
         \onslide<2->{\draw (0.2,1) -- (0.2,3);}
       \end{tikzpicture}
       \pause
+      $\rightarrow$
       \begin{tikzpicture}
         \onslide<3->{\node[draw,align=right] at (0,2) {00010\\ 000\\100\\110};}
       \end{tikzpicture}
-    \end{frame}
-    \begin{frame}
-      \frametitle{Prefix Sharing}
-      \begin{block} {Normal storage of a list of words}
-      [skydive, skyline, skyscraper] 
       \end{block}
-      \begin{block} {Can exploit common prefix}
-      sky + [dive, line, scaper]
-      \end{block}
-      This trick can also be applied on bit srings
-    \end{frame}
-    \begin{frame}
-        \frametitle{Challenges - Prefix Sharing}
+    % \begin{frame}
+    %   \frametitle{Prefix Sharing}
+    %   \begin{block} {Normal storage of a list of words}
+    %   [skydive, skyline, skyscraper] 
+    %   \end{block}
+    %   \begin{block} {Can exploit common prefix}
+    %   sky + [dive, line, scaper]
+    %   \end{block}
+    %   This trick can also be applied on bit srings
+    % \end{frame}
+      \pause
+      \pause
         \begin{itemize}
             \item variable number of key-value entries per page
             \item prefix determines
