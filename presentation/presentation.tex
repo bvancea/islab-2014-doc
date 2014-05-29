@@ -3,6 +3,7 @@
 
 \usepackage{style/beamertheme_amsterdam}
 % \renewcommand{\labelitemi}{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
 \beamertemplatenavigationsymbolsempty
 \usepackage{natbib}
 \usepackage{tikz}
@@ -21,6 +22,7 @@
     innerleftmargin=20pt
     innermargin=10pt
     }
+\graphicspath{ {images/} }
 
 \newenvironment{nscenter}
  {\parskip=0pt\par\nopagebreak\centering}
@@ -70,7 +72,7 @@
     \begin{frame}
       \frametitle{B+ Tree}
       \vspace{-3em}
-      \includegraphics[scale=0.2]{images/B+Tree.png}
+      \includegraphics[scale=0.2]{B+Tree.png}
       \vspace{1em}
       \begin{itemize}
         \item node fills one disk page
@@ -82,7 +84,7 @@
       \frametitle{Example: insert $(8,v)$}
       \vspace{-1em}
       \begin{center}
-      \includegraphics[scale=0.17]{images/B+Tree.png}
+      \includegraphics[scale=0.17]{B+Tree.png}
       \end{center}
       \pause
 
@@ -90,16 +92,16 @@
       \begin{figure}[!ht]
         \centering
         \begin{center}
-          \includegraphics[valign=t,scale=0.15]{images/B+Tree_op1.png}
+          \includegraphics[valign=t,scale=0.15]{B+Tree_op1.png}
           \quad
           \pause
-          \includegraphics[valign=t,scale=0.15]{images/B+Tree_op2.png}
+          \includegraphics[valign=t,scale=0.15]{B+Tree_op2.png}
         \end{center}
       \end{figure}
       \pause
 
       \begin{center}
-      \includegraphics[scale=0.2]{images/B+Tree_op3.png}
+      \includegraphics[scale=0.2]{B+Tree_op3.png}
       \end{center}
     \end{frame}
   \end{section}
@@ -187,7 +189,7 @@
     \end{frame}
     \begin{frame}
         \frametitle{Class Diagram}
-        Make it and add it here    
+        \includegraphics[scale=0.07]{ZooDBClassDiagram} 
     \end{frame}
     \begin{frame}
         \frametitle{Operations}
