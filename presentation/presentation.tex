@@ -69,6 +69,7 @@
       \fbox{\parbox[t][3em][c]{0.29\textwidth}{Free Space Index \\ Page-ID $\rightarrow$ TxID} }
       \end{center}
     \end{frame}
+
     \begin{frame}
       \frametitle{B+ Tree}
       \vspace{-3em}
@@ -80,6 +81,7 @@
         \item key unique vs. key-value unique
       \end{itemize}
     \end{frame}
+
     \begin{frame}
       \frametitle{Example: insert $(8,v)$}
       \vspace{-1em}
@@ -87,7 +89,6 @@
       \includegraphics[scale=0.17]{B+Tree.png}
       \end{center}
       \pause
-
       \vspace{-2em}
       \begin{figure}[!ht]
         \centering
@@ -106,46 +107,22 @@
     \end{frame}
   \end{section}
 
-  \begin{section}{The new Index Implementation}
-    3908 loc + 2665 loc of test
+  \begin{section}{Goals \& Challenges}
+    % 3908 loc + 2665 loc of test
     \begin{frame}
       \frametitle{Goals}
         \begin{itemize}
           \item fast B+ tree index
+          \item key unique and key-value unique
           \item buffer manager to allow caching
           \item prefix sharing
         \end{itemize}
     \end{frame}
-    \begin{frame}
-      \frametitle{Challenges - General}
-        \begin{itemize}
-          \item edge cases
-          \item runtime dominated by disk access
-          \begin{itemize}
-            \item change nodes infrequently
-            \item fewer nodes is better
-          \end{itemize}
-          \item only parent to child pointer
-          \item determine best when its time to split/redistribute
-          \item key unique vs. key-value unique
-          \item buffer manager lookup takes time 
-          \item prefix-sharing encoding/decoding takes time
-          \item prefix-sharing rebalancing takes time
-          \item general optimizations
-            \begin{itemize}
-              \item avoid polymorphism
-              \item bit-level operations
-            \end{itemize}
-        \end{itemize}
-    \end{frame}
-    
-    % \begin{frame}
-    %   \frametitle{Buffer Manager}
-    % \end{frame}
+
     \begin{frame}
       \frametitle{Prefix Sharing}
       \setbeamercovered{invisible}
-      \begin{block} {Exploit common prefix of keys in nodes}
+      \begin{block} {Exploit common prefix}
       \hspace*{\fill}
       \begin{tikzpicture}
         \node[draw,align=left] at (0,0) {00010000\\ 00010100\\ 00010110};
@@ -158,16 +135,6 @@
       \end{tikzpicture}
       \hspace*{\fill}
       \end{block}
-    % \begin{frame}
-    %   \frametitle{Prefix Sharing}
-    %   \begin{block} {Normal storage of a list of words}
-    %   [skydive, skyline, skyscraper] 
-    %   \end{block}
-    %   \begin{block} {Can exploit common prefix}
-    %   sky + [dive, line, scaper]
-    %   \end{block}
-    %   This trick can also be applied on bit srings
-    % \end{frame}
       \pause
       \pause
         \begin{itemize}
@@ -179,18 +146,38 @@
             \end{itemize}
         \end{itemize}    
     \end{frame}
+
     \begin{frame}
-      \frametitle{Our B+ Tree}
-      \begin{itemize}
-        \item 64 bit keys and 64 bit values
-        \item key unique and key non-unique variants
-        \item keys encoded based on common bit prefix
-      \end{itemize}
+      \frametitle{Challenges}
+        \begin{itemize}
+          \item runtime dominated by disk access
+          \begin{itemize}
+            \item prefer few nodes
+            \item rarely modify nodes
+          \end{itemize}
+          \item new features are costly
+          \item Textbook algorithms need to be adapted
+          \begin{enumerate}
+            \item not optimized for practical scenarios
+            % Pointers, inner node and leaf order different 
+            \item do not cover duplicates nor prefix sharing
+            % dont know max number of keys
+          \end{enumerate}
+          \item Low-level implementation optimizations
+        \end{itemize}
     \end{frame}
+  \end{section}
+
+  \begin{section}{The new Index Implementation}
     \begin{frame}
-        \frametitle{Class Diagram}
+        \frametitle{Index Implementation}
         \includegraphics[scale=0.065]{ZooDBClassDiagram} 
+        % one general BTree
+        % paged, unique and non-unique 
+        % only BTreeNode
+        % iterators
     \end{frame}
+
     \begin{frame}
         \frametitle{Operations}
         \begin{itemize}
@@ -205,24 +192,44 @@
             \item check if possible to split current node between left and right
             \item redistribute from left or right
             \end{itemize}
+        \item Write
+            \begin{itemize}
+              \item only write dirty nodes
+              \item prefix encoding
+            \end{itemize}
         \end{itemize}
     \end{frame}
   \end{section}
 
   \begin{section}{Benchmarks}
     \begin{frame}
-      \frametitle{Fine grained}
+      \frametitle{Microbenchmarks}
+      \begin{figure}
+        \includegraphics[scale=0.3]{images/unique_random_insert.png}
+        \quad
+        \includegraphics[scale=0.3]{images/nonUnique_random_insert_nodes.png}
+      \end{figure}
         \begin{itemize}
-          \item insert, remove, write
-          \item duration, number of nodes
-          \item prefix-sharing vs. no prefix-sharing
+          \item in every microbenchmark the new index is significantly slower
+          \item in most microbenchmarks there s a significantly lower number of nodes
+          % insert duration (for Unique-random) and nodes (for nonUnique-random), search nonUnique (or increasing) and hope that its fast
+          % mention that random is worst case
+          % write?
         \end{itemize}
     \end{frame}
+
+    \begin{frame}
+      \frametitle{Microbenchmarks}
+      \begin{figure}
+        \includegraphics[scale=0.3]{images/nonUnique_random_write.png}
+      \end{figure}
+    \end{frame}
+
     \begin{frame}
       \frametitle{Whole system}
         \begin{itemize}
-          \item test harness
-          \item partial PolePosition benchmark
+          % \item test harness
+          % \item partial PolePosition benchmark
           \item StackOverflow
         \end{itemize}
     \end{frame}
