@@ -52,7 +52,7 @@
     \begin{frame}
       \frametitle{Database Index}
       \begin{block}{}
-          Key-Value datastructure that allows for ordered iteration.
+          Key-Value data structure that allows for fast retrieval and ordered iteration of records stored in a file.
       \end{block}
       \vspace{1em}
       % Example: \lstinline|ZooJdoHelper.createIndex(pm, Person.class, "name", false);|
@@ -61,12 +61,12 @@
       \texttt{ZooJdoHelper.createIndex(pm, Person.class, "name", false);}
       \pause
       \begin{align*}
-      \fbox{\parbox[t][3em][c]{0.29\textwidth}{Attribute \\ Value $\rightarrow$ Object-ID} }
+      \fbox{\parbox[t][3em][c]{0.29\textwidth}{Attribute Index\\ Value $\rightarrow$ Object-ID} }
       \end{align*}
       \pause
       \begin{center}
-      \fbox{\parbox[t][3em][c]{0.29\textwidth}{OID \\ Object-ID $\rightarrow$ Diskpos} }
-      \fbox{\parbox[t][3em][c]{0.29\textwidth}{FSM \\ Page-ID $\rightarrow$ TxID} }
+      \fbox{\parbox[t][3em][c]{0.29\textwidth}{ObjectID Index\\ OID $\rightarrow$ Diskpos} }
+      \fbox{\parbox[t][3em][c]{0.29\textwidth}{Free Space Index \\ Page-ID $\rightarrow$ TxID} }
       \end{center}
     \end{frame}
     \begin{frame}
@@ -110,11 +110,11 @@
     3908 loc + 2665 loc of test
     \begin{frame}
       \frametitle{Goals}
-        \begin{enumerate}
+        \begin{itemize}
           \item fast B+ tree index
           \item buffer manager to allow caching
           \item prefix sharing
-        \end{enumerate}
+        \end{itemize}
     \end{frame}
     \begin{frame}
       \frametitle{Challenges - General}
@@ -189,9 +189,7 @@
     \end{frame}
     \begin{frame}
         \frametitle{Class Diagram}
-        \makebox[\linewidth][c]{%
-          \includegraphics[scale=0.07]{ZooDBClassDiagram} 
-        }
+        \includegraphics[scale=0.065]{ZooDBClassDiagram} 
     \end{frame}
     \begin{frame}
         \frametitle{Operations}
