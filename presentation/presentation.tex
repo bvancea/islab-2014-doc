@@ -71,20 +71,21 @@
     \begin{frame}
       \frametitle{Database Index}
       \begin{block}{}
-          Key-Value data structure for fast retrieval and ordered iteration of entries stored in a file.
+        \textbf{Key-Value} data structure \\
+        \begin{enumerate}
+        \item \textbf{fast} retrieval 
+        \item \textbf{ordered} iteration
+        \item stored in a \textbf{file}
+        \end{enumerate}
       \end{block}
       \vspace{1em}
       % Example: \lstinline|ZooJdoHelper.createIndex(pm, Person.class, "name", false);|
       \pause
-      Example: \\
       \texttt{ZooJdoHelper.createIndex(pm, Person.class, "name", false);}
       \pause
-      \begin{align*}
-      \fbox{\parbox[t][3em][c]{0.29\textwidth}{Attribute Index\\ Value $\rightarrow$ Object-ID} }
-      \end{align*}
-      \pause
-      \vspace{-0.9cm}
       \begin{center}
+      \fbox{\parbox[t][3em][c]{0.29\textwidth}{Attribute Index\\ Value $\rightarrow$ Object-ID} }
+      \pause
       \fbox{\parbox[t][3em][c]{0.29\textwidth}{ObjectID Index\\ OID $\rightarrow$ Diskpos} }
       \fbox{\parbox[t][3em][c]{0.29\textwidth}{Free Space Index \\ Page-ID $\rightarrow$ TxID} }
       \end{center}
@@ -98,7 +99,7 @@
       \blfootnote{\tiny Images adapted from Database Management Systems by Ramakrishnan and Gehrke.}
       \vspace{2em}
       \begin{itemize}
-        \item Inner node contains keys and children pointer, \\leaf contain keys and values.
+        \item Inner node contains keys and children pointer, \\leaf contains keys and values.
         \pause
         \item \textbf{Node fills one disk page.}
         \pause
@@ -135,10 +136,10 @@
 
     \begin{frame}
       \frametitle{B+ Tree}
-      \vspace{-1em}
+      % \vspace{-1em}
       \includegraphics[scale=0.2]{B+Tree.png}
       \blfootnote{\tiny Images adapted from Database Management Systems by Ramakrishnan and Gehrke.}
-      \vspace{2em}
+      \vspace{1em}
       \begin{itemize}
         \item Inner node contains keys and children pointer, \\leaf contain keys and values.
         \item \textbf{Node fills one disk page.}
@@ -146,7 +147,11 @@
           % over, underfull
           % after operations rebalancing
         \pause
-        \item Rebalancing on insert: split, on delete: redistribute or merge
+        \item Rebalancing
+          \begin{itemize}
+            \item on insert: split
+            \item on delete: redistribute or merge
+          \end{itemize}
         \pause
         \item Insert, remove, search are logarithmic.
       \end{itemize}
@@ -199,11 +204,11 @@
             \pause
             \item prefix determines
             \begin{itemize}
-              \item if two nodes can be split without underflow
+              \item if can be split without underflow
               \pause
-              \item if two nodes can be merged without overflow
+              \item if can be merged without overflow
               \pause
-              \item the number of entries that can be redistributed from one node to the other
+              \item the number redistributions
             \end{itemize}
         \end{itemize}    
     \end{frame}
