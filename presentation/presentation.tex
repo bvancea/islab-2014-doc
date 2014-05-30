@@ -45,6 +45,7 @@
         \item an open source object database written in Java
         \item JDO standard compliant
         \item 4 times faster than competitor db4o
+          % on pole position
         \item \url{zoodb.org}
       \end{itemize}
 
@@ -52,7 +53,7 @@
     \begin{frame}
       \frametitle{Database Index}
       \begin{block}{}
-          Key-Value data structure that allows for fast retrieval and ordered iteration of records stored in a file.
+          Key-Value data structure for fast retrieval and ordered iteration of entries stored in a file.
       \end{block}
       \vspace{1em}
       % Example: \lstinline|ZooJdoHelper.createIndex(pm, Person.class, "name", false);|
@@ -64,6 +65,7 @@
       \fbox{\parbox[t][3em][c]{0.29\textwidth}{Attribute Index\\ Value $\rightarrow$ Object-ID} }
       \end{align*}
       \pause
+      \vspace{-0.9cm}
       \begin{center}
       \fbox{\parbox[t][3em][c]{0.29\textwidth}{ObjectID Index\\ OID $\rightarrow$ Diskpos} }
       \fbox{\parbox[t][3em][c]{0.29\textwidth}{Free Space Index \\ Page-ID $\rightarrow$ TxID} }
@@ -72,13 +74,18 @@
 
     \begin{frame}
       \frametitle{B+ Tree}
-      \vspace{-3em}
+      \pause
+      \vspace{-1em}
       \includegraphics[scale=0.2]{B+Tree.png}
-      \vspace{1em}
+      \vspace{2em}
       \begin{itemize}
-        \item node fills one disk page
-        \item inner node contains keys and children pointer, leaves contain keys and values
-        \item key unique vs. key-value unique
+        \item Inner node contains keys and children pointer, \\leaf contain keys and values.
+        \pause
+        \item \textbf{Node fills one disk page.}
+        \pause
+        \item Node has maximum and minimum number of entries.
+          % over, underfull
+          % after operations rebalancing
       \end{itemize}
     \end{frame}
 
@@ -100,21 +107,50 @@
         \end{center}
       \end{figure}
       \pause
-
       \begin{center}
       \includegraphics[scale=0.2]{B+Tree_op3.png}
       \end{center}
     \end{frame}
   \end{section}
 
+    \begin{frame}
+      \frametitle{B+ Tree}
+      \vspace{-1em}
+      \includegraphics[scale=0.2]{B+Tree.png}
+      \vspace{2em}
+      \begin{itemize}
+        \item Inner node contains keys and children pointer, \\leaf contain keys and values.
+        \item \textbf{Node fills one disk page.}
+        \item Node has maximum and minimum number of entries.
+          % over, underfull
+          % after operations rebalancing
+        \pause
+        \item Rebalancing on insert: split, on delete: redistribute or merge
+        \pause
+        \item Insert, remove, search are logarithmic.
+      \end{itemize}
+    \end{frame}
+
+
   \begin{section}{Goals \& Challenges}
     % 3908 loc + 2665 loc of test
     \begin{frame}
       \frametitle{Goals}
         \begin{itemize}
-          \item fast B+ tree index
+          \item faster B+ tree index
+          \pause
           \item key unique and key-value unique
+          \begin{itemize}
+            \item Ex. insert (1,1), (1,2)
+          \end{itemize}
+          \pause
+          \item range query iterators
+          \pause
           \item buffer manager to allow caching
+          \begin{itemize}
+            \item fetches pages 
+          \end{itemize}
+          \pause
           \item prefix sharing
         \end{itemize}
     \end{frame}
@@ -138,11 +174,15 @@
       \pause
       \pause
         \begin{itemize}
-            \item variable number of key-value entries per page
+            \item variable number of key-value entries per node 
+            \pause
             \item prefix determines
             \begin{itemize}
-                \item if 2 nodes can be merged without overflow
-                \item the number of entries that can be redistributed from one node to the other
+              \item if two nodes can be split without underflow
+              \pause
+              \item if two nodes can be merged without overflow
+              \pause
+              \item the number of entries that can be redistributed from one node to the other
             \end{itemize}
         \end{itemize}    
     \end{frame}
@@ -151,19 +191,26 @@
       \frametitle{Challenges}
         \begin{itemize}
           \item runtime dominated by disk access
+          \pause
           \begin{itemize}
-            \item prefer few nodes
+            \item prefer fewer nodes
+            \pause
             \item rarely modify nodes
           \end{itemize}
-          \item new features are costly
-          \item Textbook algorithms need to be adapted
+          \pause
+          \item New features are costly.
+          \pause
+          \item Textbook algorithms need to be adapted.
+          \pause
           \begin{enumerate}
             \item not optimized for practical scenarios
+            \pause
             % Pointers, inner node and leaf order different 
             \item do not cover duplicates nor prefix sharing
             % dont know max number of keys
           \end{enumerate}
-          \item Low-level implementation optimizations
+          \pause
+          \item low-level implementation optimizations
         \end{itemize}
     \end{frame}
   \end{section}
