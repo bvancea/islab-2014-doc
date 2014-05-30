@@ -28,6 +28,19 @@
  {\parskip=0pt\par\nopagebreak\centering}
  {\par\noindent\ignorespacesafterend}
 
+\newcommand\blfootnote[1]{%
+  \begingroup
+  \renewcommand\thefootnote{}\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \endgroup
+}
+
+\renewcommand{\footnoterule}{%
+  \kern -3pt
+  \hrule width \textwidth height 0.1pt
+  \kern 2pt
+}
+
 \title{Designing an Index for ZooDB}
 %\subtitle{}
 \author{Jonas Nick \& Bogdan Vancea}
@@ -77,6 +90,7 @@
       \pause
       \vspace{-1em}
       \includegraphics[scale=0.2]{B+Tree.png}
+      \blfootnote{\tiny Images adapted from Database Management Systems by Ramakrishnan and Gehrke.}
       \vspace{2em}
       \begin{itemize}
         \item Inner node contains keys and children pointer, \\leaf contain keys and values.
@@ -91,6 +105,7 @@
 
     \begin{frame}
       \frametitle{Example: insert $(8,v)$}
+      \blfootnote{\tiny Images adapted from Database Management Systems by Ramakrishnan and Gehrke.}
       \vspace{-1em}
       \begin{center}
       \includegraphics[scale=0.17]{B+Tree.png}
@@ -117,6 +132,7 @@
       \frametitle{B+ Tree}
       \vspace{-1em}
       \includegraphics[scale=0.2]{B+Tree.png}
+      \blfootnote{\tiny Images adapted from Database Management Systems by Ramakrishnan and Gehrke.}
       \vspace{2em}
       \begin{itemize}
         \item Inner node contains keys and children pointer, \\leaf contain keys and values.
