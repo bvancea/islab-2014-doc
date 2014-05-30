@@ -293,7 +293,7 @@
         \begin{block}{Duration}
         
         \end{block}
-       \begin{tabular}{| l | l | l | l |}
+       \begin{tabular}{| l | l | l |}
         \hline
         Operation & Baseline (No prefix sharing) & Prefix sharing \\ \hline 
         Search & 1 & 0.9 - 1.1  \\ \hline 
@@ -354,12 +354,16 @@
     \end{frame}
   \end{section}
 
-%   \begin{frame}
-%     \frametitle{Summary}
-%       \begin{itemize}
-%         \item ...
-%       \end{itemize}
-%   \end{frame}
+  \begin{frame}
+    \frametitle{Summary}
+      \begin{itemize}
+        \item Encoding the keys using the common bit prefix offers a trade-off between the size of the tree and the update speed
+        of the index and the database.
+        \item Microbenchmarks do not properly predict the actual database performance.
+        \item Introduces a lot of implementation complexity.
+        \item Low-level optimizations improved performance more than we had expected.
+      \end{itemize}
+  \end{frame}
 
 %   \begin{frame}
 %     \frametitle{Outlook}
