@@ -220,35 +220,93 @@
         \end{itemize}
     \end{frame}
 
+    
     \begin{frame}
       \frametitle{Microbenchmarks}
-      \begin{figure}
-        \includegraphics[scale=0.3]{images/nonUnique_random_write.pdf}
-      \end{figure}
+        
+        \begin{block}{Duration}
+        
+        \end{block}
+       \begin{tabular}{| l | l | l | l |}
+        \hline
+        Operation & Baseline (No prefix sharing) & Prefix sharing \\ \hline 
+        Search & 1 & 0.9 - 1.1  \\ \hline 
+        Insert & 1 & 1.6 - 2.8  \\ \hline 
+        Delete & 1 & 1.45 - 2.9  \\ \hline 
+      \end{tabular}
+      
+        \begin{block}{
+        Size of B+ tree}
+        \end{block}
+       \begin{tabular}{| l | l | l | l |}
+        \hline
+        Operation & Baseline (No prefix sharing) & Prefix sharing \\ \hline 
+        Insert & 1 & 0.5 - 1.1  \\ \hline 
+        Delete & 1 & 0.5 - 0.75  \\ \hline 
+      \end{tabular}
     \end{frame}
+    
+    % \begin{frame}
+    %   \frametitle{Microbenchmarks}
+    %   \begin{figure}
+    %     \includegraphics[scale=0.3]{images/nonUnique_random_write.pdf}
+    %   \end{figure}
+    % \end{frame}
 
     \begin{frame}
-      \frametitle{StackOverflow Import}
-        \begin{figure}
-          \includegraphics[scale=0.28]{images/SO_sizes.pdf}
-          \quad
-          \pause
-          \includegraphics[scale=0.28]{images/SO_commit_duration.pdf}
-        \end{figure}
+      \frametitle{StackOverflow Data Import}
+        \begin{itemize}
+        \item Real-world workload consisting of importing StackOverflow data: users, posts, comments and votes     
+        \item 3 key unique attribute indexes and 9 key-value unique indexes
+        \end{itemize}
+    \end{frame}
+    
+    \begin{frame}
+      \frametitle{StackOverflow Import - Index Sizes}
+      
+        \begin{columns}[c]
+        \column{1.5in}
+        \includegraphics[scale=0.28]{images/SO_sizes.pdf} 
+        
+        \column{1.5in}
+        \begin{tabular}{| l | l |}
+            \hline
+            Index & Space saving (\%) \\ \hline 
+            Atrribute & 41.6   \\ \hline 
+            OID & 41.5   \\ \hline 
+            POS & 23.1   \\ \hline
+            Total & 38.5   \\ \hline 
+        \end{tabular}
+        
+        \end{columns}
+        %   \pause
+        %   \includegraphics[scale=0.28]{images/SO_commit_duration.pdf}
+    \end{frame}
+    
+    \begin{frame}{StackOverflow Import - Commit times}
+        \includegraphics[scale=0.28]{images/SO_commit_duration.pdf}
     \end{frame}
   \end{section}
 
-  \begin{frame}
-    \frametitle{Summary}
-      \begin{itemize}
-        \item ...
-      \end{itemize}
-  \end{frame}
+%   \begin{frame}
+%     \frametitle{Summary}
+%       \begin{itemize}
+%         \item ...
+%       \end{itemize}
+%   \end{frame}
+
+%   \begin{frame}
+%     \frametitle{Outlook}
+%       \begin{itemize}
+%         \item ...
+%       \end{itemize}
+%   \end{frame}
 
   \begin{frame}
-    \frametitle{Outlook}
+    \frametitle{Q\&A}
       \begin{itemize}
-        \item ...
+        \item Thank you for your attention!
+        \item Questions ?
       \end{itemize}
   \end{frame}
 
