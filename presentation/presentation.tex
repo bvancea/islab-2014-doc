@@ -182,16 +182,19 @@
         \frametitle{Operations}
         \begin{itemize}
         \item Search - Similar to normal B+ Tree
+        \pause
         \item Insert overflow
             \begin{itemize}
             \item attempt to redistribute values to left sibling before creating a new node
             \end{itemize}
+        \pause
         \item Delete underflow
             \begin{itemize}
             \item check if possible to merge with left or right neighbour
             \item check if possible to split current node between left and right
             \item redistribute from left or right
             \end{itemize}
+        \pause
         \item Write
             \begin{itemize}
               \item only write dirty nodes
@@ -202,23 +205,23 @@
   \end{section}
 
   \begin{section}{Benchmarks}
-    \begin{frame}
-      \frametitle{Microbenchmarks}
-      \begin{figure}
-        \includegraphics[scale=0.28]{images/unique_random_insert.pdf}
-        \quad
-        \pause
-        \includegraphics[scale=0.28]{images/nonUnique_random_insert_nodes.pdf}
-      \end{figure}
-      \pause
-        \begin{itemize}
-          \item in every microbenchmark the new index is significantly slower
-          \item in most microbenchmarks there s a significantly lower number of nodes
-          % insert duration (for Unique-random) and nodes (for nonUnique-random), search nonUnique (or increasing) and hope that its fast
-          % mention that random is worst case
-          % write?
-        \end{itemize}
-    \end{frame}
+    % \begin{frame}
+    %   \frametitle{Microbenchmarks}
+    %   \begin{figure}
+    %     \includegraphics[scale=0.28]{images/unique_random_insert.pdf}
+    %     \quad
+    %     \pause
+    %     \includegraphics[scale=0.28]{images/nonUnique_random_insert_nodes.pdf}
+    %   \end{figure}
+    %   \pause
+    %     \begin{itemize}
+    %       \item in every microbenchmark the new index is significantly slower
+    %       \item in most microbenchmarks there s a significantly lower number of nodes
+    %       % insert duration (for Unique-random) and nodes (for nonUnique-random), search nonUnique (or increasing) and hope that its fast
+    %       % mention that random is worst case
+    %       % write?
+    %     \end{itemize}
+    % \end{frame}
 
     
     \begin{frame}
