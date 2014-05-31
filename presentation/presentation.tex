@@ -262,16 +262,17 @@
         \item Search - Similar to normal B+ Tree
         \pause
         \item Insert overflow
-            \begin{itemize}
-            \item attempt to redistribute values to left sibling before creating a new node
-            \end{itemize}
+            \begin{enumerate}
+            \item redistribute
+            \item split 
+            \end{enumerate}
         \pause
         \item Delete underflow
-            \begin{itemize}
-            \item check if possible to merge with left or right neighbour
-            \item check if possible to split current node between left and right
-            \item redistribute from left or right
-            \end{itemize}
+            \begin{enumerate}
+            \item merge with left/right ?
+            \item split between left and right ?
+            \item redistribute
+            \end{enumerate}
         \pause
         \item Write
             \begin{itemize}
@@ -283,24 +284,6 @@
   \end{section}
 
   \begin{section}{Benchmarks}
-    % \begin{frame}
-    %   \frametitle{Microbenchmarks}
-    %   \begin{figure}
-    %     \includegraphics[scale=0.28]{images/unique_random_insert.pdf}
-    %     \quad
-    %     \pause
-    %     \includegraphics[scale=0.28]{images/nonUnique_random_insert_nodes.pdf}
-    %   \end{figure}
-    %   \pause
-    %     \begin{itemize}
-    %       \item in every microbenchmark the new index is significantly slower
-    %       \item in most microbenchmarks there s a significantly lower number of nodes
-    %       % insert duration (for Unique-random) and nodes (for nonUnique-random), search nonUnique (or increasing) and hope that its fast
-    %       % mention that random is worst case
-    %       % write?
-    %     \end{itemize}
-    % \end{frame}
-
     
     \begin{frame}
       \frametitle{Microbenchmarks}
@@ -326,19 +309,14 @@
         Delete & 1 & 0.5 - 0.75  \\ \hline 
       \end{tabular}
     \end{frame}
-    
-    % \begin{frame}
-    %   \frametitle{Microbenchmarks}
-    %   \begin{figure}
-    %     \includegraphics[scale=0.3]{images/nonUnique_random_write.pdf}
-    %   \end{figure}
-    % \end{frame}
 
     \begin{frame}
       \frametitle{StackOverflow Data Import}
         \begin{itemize}
-        \item Real-world workload consisting of importing StackOverflow data: users, posts, comments and votes     
-        \item 3 key unique attribute indexes and 9 key-value unique indexes
+        \item Real-world workload consisting of importing StackOverflow dump
+        \item 1.3 million users, 10.3 million posts, 13 million comments comments and 25 million votes     
+        \item 3 key unique attribute indexes 
+        \item 9 key-value unique indexes
         \end{itemize}
     \end{frame}
     
@@ -383,6 +361,15 @@
     \end{figure}
     \end{frame}
   \end{section}
+
+  \begin{frame}
+    \frametitle{Summary}
+      \begin{itemize}
+        \item Prefix sharing: tradeoff between speed and space
+        \item Microbenchmarks
+        \item Implementation complexity.
+      \end{itemize}
+  \end{frame}
 
   \begin{frame}
     \frametitle{Q\&A}
