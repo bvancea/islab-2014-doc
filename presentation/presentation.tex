@@ -339,44 +339,42 @@
     
     \begin{frame}
       \frametitle{StackOverflow Import - Index Sizes}
-      
-        \begin{columns}[c]
-        \column{1.5in}
-        \includegraphics[scale=0.28]{images/SO_sizes.pdf} 
-        
-        \column{1.5in}
-        \begin{tabular}{| l | l |}
-            \hline
-            Index & Space saving (\%) \\ \hline 
-            Atrribute & 41.6   \\ \hline 
-            OID & 41.5   \\ \hline 
-            POS & 23.1   \\ \hline
-            Total & 38.5   \\ \hline 
+      \begin{minipage}{0.4\textwidth}
+        \includegraphics[scale=0.32]{images/SO_sizes.pdf} 
+      \end{minipage}
+      \quad
+      \quad
+      \quad
+      \quad
+      \begin{minipage}{0.4\textwidth}
+        \begin{tabular}{ l | l }
+          \textbf{Index} & \textbf{Space saving} (\%) \\ \hline 
+            Atrribute & 41.6   \\ 
+            OID & 41.5   \\ 
+            POS & 23.1   \\
+            Total & 38.5   \\
         \end{tabular}
-        
-        \end{columns}
-        %   \pause
-        %   \includegraphics[scale=0.28]{images/SO_commit_duration.pdf}
+      \end{minipage}
     \end{frame}
     
     \begin{frame}{StackOverflow Import - Commit times}
-        \includegraphics[scale=0.28]{images/SO_commit_duration.pdf}
+      \begin{minipage}{0.4\textwidth}
+        \includegraphics[scale=0.32]{images/SO_commit_duration.pdf}
+      \end{minipage}
+      \quad
+      \quad
+      \quad
+      \quad
+      \begin{minipage}{0.4\textwidth}
+        \begin{itemize}
+          \item predominantly searches
+          \item more entries in a node $\rightarrow$ fewer dirty nodes
+          \item data locality
+        \end{itemize}
+      \end{minipage}
+
     \end{frame}
   \end{section}
-
-%   \begin{frame}
-%     \frametitle{Summary}
-%       \begin{itemize}
-%         \item ...
-%       \end{itemize}
-%   \end{frame}
-
-%   \begin{frame}
-%     \frametitle{Outlook}
-%       \begin{itemize}
-%         \item ...
-%       \end{itemize}
-%   \end{frame}
 
   \begin{frame}
     \frametitle{Q\&A}
