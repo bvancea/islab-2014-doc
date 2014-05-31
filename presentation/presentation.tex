@@ -339,14 +339,14 @@
     
     \begin{frame}
       \frametitle{StackOverflow Import - Index Sizes}
-      \begin{minipage}{0.4\textwidth}
-        \includegraphics[scale=0.32]{images/SO_sizes.pdf} 
+      \begin{figure}
+      \centering
+      \makebox[0pt][c]{
+      \begin{minipage}{0.5\textwidth}
+        \includegraphics[scale=0.37]{images/SO_sizes.pdf} 
       \end{minipage}
-      \quad
-      \quad
-      \quad
-      \quad
-      \begin{minipage}{0.4\textwidth}
+      \hspace{3em}
+      \begin{minipage}{0.5\textwidth}
         \begin{tabular}{ l | l }
           \textbf{Index} & \textbf{Space saving} (\%) \\ \hline 
             Atrribute & 41.6   \\ 
@@ -355,24 +355,27 @@
             Total & 38.5   \\
         \end{tabular}
       \end{minipage}
+    }
+      \end{figure}
     \end{frame}
     
     \begin{frame}{StackOverflow Import - Commit times}
-      \begin{minipage}{0.4\textwidth}
-        \includegraphics[scale=0.32]{images/SO_commit_duration.pdf}
+      \begin{figure}
+      \centering
+      \makebox[0pt][c]{
+      \begin{minipage}{0.5\textwidth}
+        \includegraphics[scale=0.37]{images/SO_commit_duration.pdf}
       \end{minipage}
-      \quad
-      \quad
-      \quad
-      \quad
-      \begin{minipage}{0.4\textwidth}
+      \hspace{3em}
+      \begin{minipage}{0.5\textwidth}
         \begin{itemize}
           \item predominantly searches
-          \item more entries in a node $\rightarrow$ fewer dirty nodes
+          \item more entries in a node \\$\rightarrow$ fewer dirty nodes
           \item data locality
         \end{itemize}
       \end{minipage}
-
+      }
+    \end{figure}
     \end{frame}
   \end{section}
 
