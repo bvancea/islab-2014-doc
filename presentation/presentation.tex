@@ -56,7 +56,7 @@
       % \frametitle{ZooDB}
       \vspace{-4em}
       \hspace{-2em}
-      \includegraphics[scale=0.1]{zoodb_logo.png}
+      \includegraphics[scale=0.1]{images/zoodb_logo.png}
       \vspace{3em}
       \hspace{2em}
       \begin{itemize}
@@ -87,7 +87,7 @@
       \fbox{\parbox[t][3em][c]{0.29\textwidth}{Attribute Index\\ Value $\rightarrow$ Object-ID} }
       \pause
       \fbox{\parbox[t][3em][c]{0.29\textwidth}{ObjectID Index\\ OID $\rightarrow$ Diskpos} }
-      \fbox{\parbox[t][3em][c]{0.29\textwidth}{Class Extent Index \\ Diskpos $\rightarrow$ Overflow position} }
+      \fbox{\parbox[t][3em][c]{0.29\textwidth}{Free Space Index \\ Page-ID $\rightarrow$ TxID} }
       \end{center}
     \end{frame}
 
@@ -271,7 +271,7 @@
         \pause
         \item Write
             \begin{itemize}
-              \item only dirty pages
+              \item only write dirty nodes
               \item prefix encoding
             \end{itemize}
         \end{itemize}
@@ -279,15 +279,16 @@
   \end{section}
 
   \begin{section}{Benchmarks}
+    
     \begin{frame}
       \frametitle{Microbenchmarks}
         
         \begin{block}{Duration}
         
         \end{block}
-       \begin{tabular}{| l | l | l |}
+       \begin{tabular}{| l | l | l | l |}
         \hline
-        Operation & No Prefix sharing & Prefix sharing \\ \hline 
+        Operation & Baseline (No prefix sharing) & Prefix sharing \\ \hline 
         Search & 1 & 0.9 - 1.1  \\ \hline 
         Insert & 1 & 1.6 - 2.8  \\ \hline 
         Delete & 1 & 1.45 - 2.9  \\ \hline 
@@ -298,12 +299,12 @@
         \end{block}
        \begin{tabular}{| l | l | l | l |}
         \hline
-        Operation & No Prefix sharing & Prefix sharing \\ \hline 
+        Operation & Baseline (No prefix sharing) & Prefix sharing \\ \hline 
         Insert & 1 & 0.5 - 1.1  \\ \hline 
         Delete & 1 & 0.5 - 0.75  \\ \hline 
       \end{tabular}
     \end{frame}
-    
+
     \begin{frame}
       \frametitle{StackOverflow Data Import}
         \begin{itemize}
@@ -316,38 +317,40 @@
     
     \begin{frame}
       \frametitle{StackOverflow Import - Index Sizes}
-      
-        \begin{columns}[c]
-        \column{1.5in}
-        \includegraphics[scale=0.28]{images/SO_sizes.pdf} 
-        
-        \column{1.5in}
-        Final database size: 31 GB
-        \begin{tabular}{| l | l |}
-            \hline
-            Index & Space saving (\%) \\ \hline 
-            Atrribute & 41.6   \\ \hline 
-            OID & 41.5   \\ \hline 
-            POS & 23.1   \\ \hline
-            Total & 38.5   \\ \hline 
+      \begin{minipage}{0.4\textwidth}
+        \includegraphics[scale=0.32]{images/SO_sizes.pdf} 
+      \end{minipage}
+      \quad
+      \quad
+      \quad
+      \quad
+      \begin{minipage}{0.4\textwidth}
+        \begin{tabular}{ l | l }
+          \textbf{Index} & \textbf{Space saving} (\%) \\ \hline 
+            Atrribute & 41.6   \\ 
+            OID & 41.5   \\ 
+            POS & 23.1   \\
+            Total & 38.5   \\
         \end{tabular}
-        
-        \end{columns}
+      \end{minipage}
     \end{frame}
     
     \begin{frame}{StackOverflow Import - Commit times}
-        \begin{columns}[c]
-        
-        \column{1.5in}
-            \includegraphics[scale=0.28]{images/SO_commit_duration.pdf}
-            
-        \column{1.5in}
-            Faster ?
-            \begin{itemize}
-            \item fewer pages
-            \item less page reloading
-            \end{itemize}
-        \end{columns}
+      \begin{minipage}{0.4\textwidth}
+        \includegraphics[scale=0.32]{images/SO_commit_duration.pdf}
+      \end{minipage}
+      \quad
+      \quad
+      \quad
+      \quad
+      \begin{minipage}{0.4\textwidth}
+        \begin{itemize}
+          \item predominantly searches
+          \item more entries in a node $\rightarrow$ fewer dirty nodes
+          \item data locality
+        \end{itemize}
+      \end{minipage}
+
     \end{frame}
   \end{section}
 
