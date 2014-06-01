@@ -61,8 +61,11 @@
       \hspace{2em}
       \begin{itemize}
         \item an open source object database written in Java
-        \item JDO standard compliant
+        \pause
+        \item based on JDO standard
+        \pause
         \item 4 times faster than competitor db4o
+        \pause
           % on pole position
         \item \url{zoodb.org}
       \end{itemize}
@@ -84,10 +87,10 @@
       \texttt{ZooJdoHelper.createIndex(pm, Person.class, "name", false);}
       \pause
       \begin{center}
-      \fbox{\parbox[t][3em][c]{0.29\textwidth}{Attribute Index\\ Value $\rightarrow$ Object-ID} }
+        \fbox{\parbox[t][3em][c]{0.29\textwidth}{\textbf{Attribute Index}\\ Value $\rightarrow$ Object-ID} }
       \pause
-      \fbox{\parbox[t][3em][c]{0.29\textwidth}{ObjectID Index\\ OID $\rightarrow$ Diskpos} }
-      \fbox{\parbox[t][3em][c]{0.29\textwidth}{Free Space Index \\ Page-ID $\rightarrow$ TxID} }
+      \fbox{\parbox[t][3em][c]{0.29\textwidth}{\textbf{ObjectID Index}\\ OID $\rightarrow$ Diskpos} }
+      \fbox{\parbox[t][3em][c]{0.29\textwidth}{\textbf{Extension Index} \\ Diskpos $\rightarrow$ \\0$|$follow Diskpos} }
       \end{center}
     \end{frame}
 
@@ -150,7 +153,7 @@
         \item Rebalancing
           \begin{itemize}
             \item on insert: split
-            \item on delete: redistribute or merge
+            \item on delete: merge or redistribute
           \end{itemize}
         \pause
         \item Insert, remove, search are logarithmic.
@@ -200,16 +203,8 @@
       \pause
       \pause
         \begin{itemize}
-            \item variable number of key-value entries per node 
-            \pause
-            \item prefix determines
-            \begin{itemize}
-              \item if can be split without underflow
-              \pause
-              \item if can be merged without overflow
-              \pause
-              \item the number redistributions
-            \end{itemize}
+            \item allows storing more entries in a node
+            \item determines if node under- or overflows
         \end{itemize}    
     \end{frame}
 
@@ -229,10 +224,10 @@
           \item Textbook algorithms need to be adapted.
           \pause
           \begin{enumerate}
-            \item not optimized for practical scenarios
+            \item not optimized for our practical scenario
             \pause
             % Pointers, inner node and leaf order different 
-            \item do not cover duplicates nor prefix sharing
+            \item do not cover prefix sharing nor duplicates
             % dont know max number of keys
           \end{enumerate}
           \pause
