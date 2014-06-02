@@ -293,10 +293,11 @@
         \begin{itemize}
         \item full in-memory, index only tests
         \end{itemize}
-        \begin{block}{Duration}
+        \pause
+        \begin{block}{Duration - Old index is the baseline}
         
         \end{block}
-       \begin{tabular}{| l | l | l | l |}
+       \begin{tabular}{| l | l | l |}
         \hline
         Operation & No Prefix sharing & Prefix sharing \\ \hline 
         Search & 1 & 0.9 - 1.1  \\ \hline 
@@ -305,9 +306,9 @@
       \end{tabular}
       
         \begin{block}{
-        Size of B+ tree}
+        Size of B+ tree - Old index is the baseline}
         \end{block}
-       \begin{tabular}{| l | l | l | l |}
+       \begin{tabular}{| l | l | l |}
         \hline
         Operation & No Prefix sharing & Prefix sharing \\ \hline 
         Insert & 1 & 0.5 - 1.1  \\ \hline 
