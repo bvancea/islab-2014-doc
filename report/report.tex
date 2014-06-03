@@ -1,6 +1,8 @@
 \documentclass[11pt,a4paper,oneside]{article}
+\usepackage{graphicx}
 
 \begin{document}
+\graphicspath{ {images/} }
 \title{Designing an Index for ZooDB}
 \author{Jonas Nick \& Bogdan Vancea}
 %\date{December 2004}
@@ -8,7 +10,7 @@
 \tableofcontents
 
 \section{Introduction}
-ZooDB is an open source object database written in Java. It is based on the JDO standard, which is a specification of Java object persistance.
+ZooDB is an open source object database written in Java. It is based on the JDO standard, which is a specification of Java object persistence.
 At this point it lacks some advanced features like concurrency and schema evolution but it has been applied successfully in some university projects. Its selling point is speed on the pole position benchmark.
 \subsection{Database Index}
  The following definition captures what we want to understand as a database index.
@@ -17,7 +19,7 @@ At this point it lacks some advanced features like concurrency and schema evolut
  ZooDB uses Indexes on several other places, it has for example an ObjectID index to map OIDs to positions on the disk and an Extension Index to map a Diskposition to the following Diskposition if an Object spans several disk pages. 
 
 \subsection{B+-Tree}
- What can be the underlying datastructure of an Index? We said that the Index should allow for ordered iteration which makes an ordered datastructure such as a search tree ideal. Further, the index is going to be stored in a file on the hard drive, which is why indexes are implemented as B+-Trees
+ What can be the underlying data structure of an Index? We said that the Index should allow for ordered iteration which makes an ordered data structure such as a search tree ideal. Further, the index is going to be stored in a file on the hard drive, which is why indexes are implemented as B+-Trees
  This is an example of a B+-Tree, which has an inner node that contains keys and pointer to children and leaf nodes that contain keys and values, which are depicted here as dots.
  The most important property of a B+-Tree is that a node fills exactly one disk page, which is why the leafs in the example have space here for other keys.
  This means that a node has a maximum number of entries and in order to use as few disk pages as possible the nodes should be as full as possible, meaning that there is a minimum number of entries that are allowed in a node. This is normally a half of the maximum number of keys.
@@ -27,13 +29,13 @@ At this point it lacks some advanced features like concurrency and schema evolut
  Now the parent page overflows so the node is split in half and one key goes to the upper level. 
  Leading to this tree, which is balanced and the requirements of minimum and maximum entries are still fulfilled (except in the root).
 
- As we have seen rebalancing on insert takes place by using splits. When deleting an entry and the node becomes underfull, the node is merged with a sibling node. If a merge is not possible, some entries are redistributed from a sibling to the underflowing node.
+ As we have seen re-balancing on insert takes place by using splits. When deleting an entry and the node becomes underfull, the node is merged with a sibling node. If a merge is not possible, some entries are redistributed from a sibling to the underflowing node.
  All operations have logarithmic time complexity.
 
 
 \section{Goals \& Challenges}
  We had several goals in this project.
- ZooDB already had an Index, our reimplementation should be significantly faster. The index implementation has a substantial impact on the performance of the whole databse
+ ZooDB already had an Index, our reimplementation should be significantly faster. The index implementation has a substantial impact on the performance of the whole database
  There should be two types of indices, one key unique and one key-value unique. 
    The difference is that in a key unique index the first entry will be overwritten, in a key-value unique index, both entries can exist. 
  The index should support range query iterators
@@ -44,15 +46,30 @@ At this point it lacks some advanced features like concurrency and schema evolut
  Imagine this box represents a node which has some keys. 
  The bit-prefix of all keys is the same, so we can store only the deviations from the prefix.
  You can easily see that we have to store less bits now, meaning that we can pack more keys on a page.
- Prefix sharing introduces a lot of changes to the logic of the BTree. With prefix sharing every node can have a variable number of entries, depending on the actual keys. Previously, the maximum number of entries was the same for all nodes. This means that prefix sharing also affects all rebalancing operations.
+ Prefix sharing introduces a lot of changes to the logic of the BTree. With prefix sharing every node can have a variable number of entries, depending on the actual keys. Previously, the maximum number of entries was the same for all nodes. This means that prefix sharing also affects all re-balancing operations.
 
 \subsection{Challenges}
+
  The runtime of the index is dominated by disk access, therefore having fewer pages meaning fewer nodes is preferred.
  And since modified nodes have to written to disk, you want to rarely modify nodes.
  New features are costly, prefix-sharing encoding takes time and caching adds another layer of indirection.
  Textbook algorithms need to be adapted because they are not optimized for our practical scenario in various ways (sibling pointer, different order).
  and they do not cover prefix sharing nor dealing with duplicates. The operations for key-value unique trees are in many steps different.
  And we dealt with low level implementations: replacing multiplications/divisions with bit-shifts and reducing polymorphism
+
+\section{Implementation}
+\subsection{Class Diagram} % (fold)
+\label{sub:class_diagram}
+
+\includegraphics[scale=0.067]{ZooDBClassDiagram} 
+
+
+\subsection{B+ Tree Operations} % (fold)
+\label{sub:b_tree_operations}
+
+
+% subsection b_tree_operations (end)
+% subsection class_diagram (end)
 
 
 
