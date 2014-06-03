@@ -119,11 +119,11 @@ For the insert operation, if the new key has been inserted in the first or the l
 \end{enumerate}
 	
 In the case of the delete operation, the removal of an entry from the key array can cause the prefix to change. If the node from which the deletion has been performed is now underfull, a re-balancing procedure begin. The steps for the re-balancing are the following:
-\begin{itemize}
+\begin{enumerate}
 	\item In the first step, the algorithm first checks if the current node can be merged with \textbf{either} its left or its right neighbour. 
 	\item If the merge at the previous step is not possible, the next step is to check wether the keys from the current node can be split between its left sibling \textbf{and} its right sibling. While this approach would involve in marking both the left and righ siblings as dirty, the current node can then be removed.
 	\item If the the previous operation was not possible, some keys are redistribute from either the left or the right sibling. As a note, the success of the rebalancing operations is not guaranteed and the current node could remain underfull after the re-balance operation. However, we observed that this behaviour does not happen very often and does not have a significant impact on the tree size.
-\end{itemize}
+\end{enumerate}
 
 % subsection b_tree_operations (end)
 
