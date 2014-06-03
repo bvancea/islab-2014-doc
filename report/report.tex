@@ -1,5 +1,20 @@
 \documentclass[11pt,a4paper,oneside]{article}
 \usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage[export]{adjustbox}
+
+\setlength{\textwidth}{16cm}
+\setlength{\marginparwidth}{1.5cm}
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{0.15cm}
+\setlength{\textheight}{22cm}
+\setlength{\oddsidemargin}{0cm}
+\setlength{\evensidemargin}{\oddsidemargin}
+\setlength{\topmargin}{0cm}
+\setlength{\headheight}{0cm}
+\setlength{\headsep}{0cm}
+
+\renewcommand{\familydefault}{\sfdefault}
 
 \begin{document}
 \graphicspath{ {images/} }
@@ -58,20 +73,39 @@ At this point it lacks some advanced features like concurrency and schema evolut
  And we dealt with low level implementations: replacing multiplications/divisions with bit-shifts and reducing polymorphism
 
 \section{Implementation}
+\subsection{Buffer Manager} % (fold)
+\label{sub:buffer_manager}
+Explain how all accesses to nodes are done through the BufferManager.
+
 \subsection{Class Diagram} % (fold)
 \label{sub:class_diagram}
 
-\includegraphics[scale=0.067]{ZooDBClassDiagram} 
+For the new implementation of the index we have focused on achieving a balance between good design and code that offers good performance. Figure \ref{fig:class-diagram} show the class diagram for ZooDB.  
+\begin{figure}[h]
+\includegraphics[scale=0.089, center]{ZooDBClassDiagram} 
+\caption{The class diagram for the new index implementation}
+\label{fig:class-diagram}
+\end{figure}
 
+The \textbf{BTree} class implements all the logic for the B+ tree operations, including the re-balancing operations. The operations implemented operate on instances of the \textbf{BTreeNode} class. The \textbf{BTreeNode} abstract class contains the logic for a B+ tree node. To reduce the usage of polymorphism, we have opted not to implement different classes for leaf, inner or root nodes. The \textbf{BTreeNode} class has additional boolean fields, \textit{isLeaf} and \textit{isRoot} that are used to describe the position of a node within the tree. This choice reduces the size of the inheritance hierarchy, however in the cases where leaf nodes have to be treated differently than inner nodes we have added additional if statements to separate the behavior. 
+
+The \textbf{BTreeNode} class holds no information about the child nodes of the node. However, this class exposes a number of abstract child access methods, like \textit{getChild()} or \textit{getChildren()}. These methods are implemented by the \textbf{PagedBTreeNode} class. Additionally, the \textbf{BTreeNode} class does not hold any information to differentiate between nodes belonging to unique and non-unique trees. All of the methods of for the \textbf{BTree} and \textbf{BTreeNode} classes which need to have different behaviour for unique and non-unique trees are abstract methods and will be overridden by the \textbf{UniquePagedBTreeNode} and \textbf{NonUniquePagedBTreeNode} classes.
+
+The \textbf{PagedBTreeNode} holds the logic responsible for loading nodes from storage. class extends the \textbf{BTreeNode} and contains a reference to the BufferManager associated with the tree. 
+
+% subsection class_diagram (end)
 
 \subsection{B+ Tree Operations} % (fold)
 \label{sub:b_tree_operations}
-
+Detail the B+ tree operations and explain how they are different from a traditional B+ tree.
 
 % subsection b_tree_operations (end)
-% subsection class_diagram (end)
 
+\subsection{Prefix Sharing Re-balancing} % (fold)
+\label{sub:prefix_sharing_rebalancing}
+Detail how the re-balancing operations are done using prefix sharing.
 
+% subsection prefix_sharing_rebalancing (end)
 
 
 \end{document}
