@@ -138,11 +138,20 @@ We have based the prefix sharing algorithms on the following observations about 
 	\item Removing an element from the array will either increase the prefix of the whole array or leave it unchanged.
 \end{itemize}
 
-Details about split.
+The main purpose of the split operation is to split the keys of a node that is overflowing between 2 nodes such that the node sizes are roughly the same. We perform this operation using a binary search to determine the optimal number of keys that have be moved from the current node such that the sizes of the current node and new node are as close as possible. The initial value for the number of keys to move is equal to half of the number of keys stored on the current node. The following logic is executed during each round of the binary search. 
+\begin{enumerate}
+	\item Compute the binary prefixes and sizes for the nodes that would result if the current number of keys k would be moved to a 
+	new node. 
+	\item Compute the different between the node sizes and if the current split is the best encountered so far, store the current number of keys to move and the size difference.
+	\item If the size of the current node after the simulated key move is smaller than the size of the new node, decrease the number of keys to move. Otherwise, increase the number of keys to move.
+\end{enumerate}
+In the end, the split algorithm returns the number of keys to move corresponding to the mimimum different in size between the current and new node.
 
-Details about merge.
+A special case of the split operation is when the current node overflow and we would like to check if the key array can be equally split between the left and right siblings. In that case, the binary search is modified to search for number of keys to move to the right node, the remaining keys being moved to the left node. An additional optimization that we have added in that case is to stop at the first split that results in both left and right nodes having a valid size.
 
-Details about redistribute.
+The goal of the redistribute operation is to move a number of keys from a node that is not underfull to an underfull node. It is desirable that at the end the split operation, neither of the nodes be underfull. If that is not possible, the redistribution fails and no keys are moved. The number of keys to move to the underfull node is computed in a similar manner to the split operation, using a binary search. Therefore, at each step, the prefixes and the sizes of the node that would result after the operation are computed. The binary search stops at the first split that results into two nodes of valid sizes.
+
+The goal of the merge operation is reduce the number of nodes in the tree by merging an underfull node into either its left or right neighbours. In the case of the prefix sharing, the check that determines if two nodes can be merged is non-trivial, as it involves computing the prefix and the size of the node that would result after the merge. If the new node does not fit into a page file, the merge operation will not be performed.
 
 \subsection{Support for different sizes}
 We have support for this (ex: PagedPosIndex) , maybe we can provide some additional details.
