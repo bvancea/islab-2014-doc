@@ -7,6 +7,7 @@
 \setlength{\textwidth}{16cm}
 \setlength{\marginparwidth}{1.5cm}
 \setlength{\parindent}{0cm}
+
 \setlength{\parskip}{0.15cm}
 \setlength{\textheight}{22cm}
 \setlength{\oddsidemargin}{0cm}
@@ -89,12 +90,20 @@ For the new implementation of the index we have focused on achieving a balance b
 \label{fig:class-diagram}
 \end{figure}
 
+% subsection subsection_name (end)
 The \textbf{BTree} class implements all the logic for the B+ tree operations, including the re-balancing operations. The operations implemented operate on instances of the \textbf{BTreeNode} class. The \textbf{BTreeNode} abstract class contains the logic for a B+ tree node. To reduce the usage of polymorphism, we have opted not to implement different classes for leaf, inner or root nodes. The \textbf{BTreeNode} class has additional boolean fields, \textit{isLeaf} and \textit{isRoot} that are used to describe the position of a node within the tree. This choice reduces the size of the inheritance hierarchy, however in the cases where leaf nodes have to be treated differently than inner nodes we have added additional if statements to separate the behavior. 
 
 The \textbf{BTreeNode} class holds no information about the child nodes of the node. However, this class exposes a number of abstract child access methods, like \textit{getChild()} or \textit{getChildren()}. These methods are implemented by the \textbf{PagedBTreeNode} class. Additionally, the \textbf{BTreeNode} class does not hold any information to differentiate between nodes belonging to unique and non-unique trees. All of the methods of for the \textbf{BTree} and \textbf{BTreeNode} classes which need to have different behaviour for unique and non-unique trees are abstract methods and will be overridden by the \textbf{UniquePagedBTreeNode} and \textbf{NonUniquePagedBTreeNode} classes.
 
-The \textbf{PagedBTreeNode} holds the logic responsible for loading nodes from storage. class extends the \textbf{BTreeNode} and contains a reference to the BufferManager associated with the tree. 
+The \textbf{PagedBTreeNode} holds the logic responsible for loading nodes from storage. class extends the \textbf{BTreeNode} and contains a reference to the BufferManager associated with the tree. Each instance of \textbf{PagedBTreeNode} contains a \textit{pageId}, which is given assigned by the \textbf{BufferManager} upon storage. The \textbf{PagedBTree} node contains information about the children of a node. We have opted to store the an array consisting of the page ids of the child nodes, instead of an array of hard references to the PagedBTreeNodes. Instead we store an array of weak references to the \textbf{PagedBTreeNode} objects. When a new node is loaded from disk, the child array is populated with the page ids of its child nodes while the array of weak references to the children is initialized to an array of null references. The first access to a child node will retrieve the \textbf{PagedBTreeNode} instance from the buffer manager and populate the weak references corresponding to its page id. Subsequent accesses to the child will use the weak reference, provided the child objects is not reclaimed by the garbage collector. If any of the children nodes are reclaimed by the garbage collector, they will be retrieved from storage on the next access and the weak reference will be repopulated.
 
+The \textbf{UniquePagedBTreeNode} and \textbf{NonUniquePagedBTreeNode} classes extend the \textbf{PagedBTreeNode} class and contain data and behaviour specific to nodes belonging to unique and non-unique trees. For example, in case the non-unique nodes, inner nodes cotains the both a key array and a value array. This leads to different behaviour for unique and non-unique nodes during operations like peforming binary searches, shifting node entries to the left or right or copying node entries from one node to the other. This different behaviour is implemented in the aforementioned classes: \textbf{UniquePagedBTreeNode} and \textbf{NonUniquePagedBTreeNode}. 
+
+The tree iterators are implemented by the \textbf{AscendingBTreeLeafEntryIterator} and \textbf{DescendingBTreeLeafEntryIterator} classes. The shared behaviour for these classes is implemented in the abstract class \textbf{BTreeLeafEntryIterator}. Because we have opted not to store information about the parent nodes, neither in the form of page ids or references, the iteration process requires the use of a stack to store the current position in the tree. The iterators do not support \textbf{Copy on Write} and are invalidated when the B+ tree is modified. 
+
+The indexes are implemented in the \textbf{UniqueBTreeIndex} and \textbf{NonUniqueBTreeIndex} classes. As the index interface offers both methods to modify the B+ tree and to create iterators, we have opted to separate the tree logic in \textbf{BTree} and the iterator in \textbf{BTreeLeafEntryIterator}. This means that index objects delete all B+ tree operations to a reference of a \text{BTree} and create instances of \textbf{BTreeLeafEntryIterator} as needed.
+
+The prefix sharing logic has been implemented in the \textbf{PrefixSharingHelper} class. Operations like computing the prefix, encoding/decoding the key array using prefix sharing and the re-balancing computations are available as static methods. We have choses to keep all this logic static to avoid creating extra computational objects that would have to be passed to \textbf{BTreeNode} objects upon creation.
 % subsection class_diagram (end)
 
 \subsection{B+ Tree Operations} % (fold)
