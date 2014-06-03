@@ -101,20 +101,52 @@ The \textbf{UniquePagedBTreeNode} and \textbf{NonUniquePagedBTreeNode} classes e
 
 The tree iterators are implemented by the \textbf{AscendingBTreeLeafEntryIterator} and \textbf{DescendingBTreeLeafEntryIterator} classes. The shared behaviour for these classes is implemented in the abstract class \textbf{BTreeLeafEntryIterator}. Because we have opted not to store information about the parent nodes, neither in the form of page ids or references, the iteration process requires the use of a stack to store the current position in the tree. The iterators do not support \textbf{Copy on Write} and are invalidated when the B+ tree is modified. 
 
-The indexes are implemented in the \textbf{UniqueBTreeIndex} and \textbf{NonUniqueBTreeIndex} classes. As the index interface offers both methods to modify the B+ tree and to create iterators, we have opted to separate the tree logic in \textbf{BTree} and the iterator in \textbf{BTreeLeafEntryIterator}. This means that index objects delete all B+ tree operations to a reference of a \text{BTree} and create instances of \textbf{BTreeLeafEntryIterator} as needed.
+The indexes are implemented in the \textbf{UniqueBTreeIndex} and \textbf{NonUniqueBTreeIndex} classes. As the index interface offers both methods to modify the B+ tree and to create iterators, we have opted to separate the tree logic in \textbf{BTree} and the iterator in \textbf{BTreeLeafEntryIterator}. This means that index objects delete all B+ tree operations to a reference of a \textbf{BTree} and create instances of \textbf{BTreeLeafEntryIterator} as needed.
 
 The prefix sharing logic has been implemented in the \textbf{PrefixSharingHelper} class. Operations like computing the prefix, encoding/decoding the key array using prefix sharing and the re-balancing computations are available as static methods. We have choses to keep all this logic static to avoid creating extra computational objects that would have to be passed to \textbf{BTreeNode} objects upon creation.
 % subsection class_diagram (end)
 
 \subsection{B+ Tree Operations} % (fold)
 \label{sub:b_tree_operations}
-Detail the B+ tree operations and explain how they are different from a traditional B+ tree.
+One important implementation choice we have made is to store the key array un-encoded in memory and to perform the prefix sharing encoding only when nodes are written to disk. While this approach increase the size of the node pages when loaded in memory, the advantage of this choice is that the costly key array encoding is only performed once, even if the node is modified multiple times before it is written to disk. 
+
+Another advantage of having the key array unencoded in memory is that the search operations is similar to the search operation run on a traditional B+ tree. 
+
+For the insert operation, if the new key has been inserted in the first or the last position of the key array, the prefix for the node has to be recomputed. The overflow is handled as follows:
+\begin{enumerate}
+	\item The algorithm first attempts to redistribute some keys from the current node to its left sibling. We do this to delay the moment when a new node is created. The exact redistribution process is described in the next section.
+	\item If that is not possible, the current node is split into 2 nodes of equal size. One important different appears in how the new tree handles keys moving from one node to the other. In a traditional B+ tree, the max number of keys on a node is fixed, which makes it very to perform operations like splitting a node into 2 nodes of equal sizes. In case of prefix sharing, the first half of the keys could have a very different prefix size compared to the second half, which would lead to having 2 nodes with very different sizes. To avoid this, we perform a binary search to compute the optimal number of keys to move to the new node.
+\end{enumerate}
+	
+In the case of the delete operation, the removal of an entry from the key array can cause the prefix to change. If the node from which the deletion has been performed is now underfull, a re-balancing procedure begin. The steps for the re-balancing are the following:
+\begin{itemize}
+	\item In the first step, the algorithm first checks if the current node can be merged with \textbf{either} its left or its right neighbour. 
+	\item If the merge at the previous step is not possible, the next step is to check wether the keys from the current node can be split between its left sibling \textbf{and} its right sibling. While this approach would involve in marking both the left and righ siblings as dirty, the current node can then be removed.
+	\item If the the previous operation was not possible, some keys are redistribute from either the left or the right sibling. As a note, the success of the rebalancing operations is not guaranteed and the current node could remain underfull after the re-balance operation. However, we observed that this behaviour does not happen very often and does not have a significant impact on the tree size.
+\end{itemize}
 
 % subsection b_tree_operations (end)
 
-\subsection{Prefix Sharing Re-balancing} % (fold)
+\subsection{Prefix Sharing Implementation} % (fold)
 \label{sub:prefix_sharing_rebalancing}
-Detail how the re-balancing operations are done using prefix sharing.
+When storing a node, the key array of a node is encoded into an array of bytes accoding to the common prefix. The encoding was peformed at the bit-level, meaning that both the binary prefix and the deviations of elements from the prefix are computed as arbitrary number of bits. This means that if the binary prefix has length 9, it can be store in 2 bytes. Moreover, the remaining 7 bits from the second byte can be used to store part of the deviation of the fist array element. Other available alternatives for encoding would have been to compute both the prefix and the deviations as multiples of 8 and ensure that each encoded byte contains only prefix bits or deviation bits. We have chosen the bit-level encoding because it offers the best space reduction.
+
+We have based the prefix sharing algorithms on the following observations about the binary prefix for an array of \textbf{sorted} integer elements.
+\begin{itemize}
+	\item The binary prefix of the array is equal to the binary prefix shared by the first and last element.
+	\item Inserting a new element in the array in an ordered manner will either decrease the prefix of the whole array or leave it unchanged.
+	\item Removing an element from the array will either increase the prefix of the whole array or leave it unchanged.
+\end{itemize}
+
+Details about split.
+
+Details about merge.
+
+Details about redistribute.
+
+\subsection{Support for different sizes}
+We have support for this (ex: PagedPosIndex) , maybe we can provide some additional details.
+
 
 % subsection prefix_sharing_rebalancing (end)
 
