@@ -1,5 +1,6 @@
 \documentclass[11pt,a4paper,oneside]{article}
 \usepackage{graphicx}
+\usepackage{tikz}
 \usepackage[utf8]{inputenc}
 \usepackage[export]{adjustbox}
 
@@ -26,54 +27,80 @@
 %\date{December 2004}
 \maketitle
 \tableofcontents
+\clearpage
 
 \section{Introduction}
 ZooDB is an open source object database written in Java. It is based on the JDO standard, which is a specification of Java object persistence.
-At this point it lacks some advanced features like concurrency and schema evolution but it has been applied successfully in some university projects. Its selling point is speed on the pole position benchmark.
+Up to this point it lacks some advanced features like concurrency and schema evolution but it has already been applied successfully in several university projects. 
+The most important selling point of ZooDB is its speed. It is up to four times faster than competitor db4o on the PolePosition benchmark\footnote{http://polepos.org/}.
+
 \subsection{Database Index}
- The following definition captures what we want to understand as a database index.
- Here is an example where a user of the database creates an index. He has a class Person and wants to retrieve instances of the class rapidly by name.
- This is called an Attribute Index, which maps values (here names) to Object-IDs
- ZooDB uses Indexes on several other places, it has for example an ObjectID index to map OIDs to positions on the disk and an Extension Index to map a Diskposition to the following Diskposition if an Object spans several disk pages. 
+A database \emph{index} is a data structure for rapidly retrieving and saving key-value entries. 
+It allows ordered iteration and can be stored in a hard drive file.
 
-\subsection{B+-Tree}
- What can be the underlying data structure of an Index? We said that the Index should allow for ordered iteration which makes an ordered data structure such as a search tree ideal. Further, the index is going to be stored in a file on the hard drive, which is why indexes are implemented as B+-Trees
- This is an example of a B+-Tree, which has an inner node that contains keys and pointer to children and leaf nodes that contain keys and values, which are depicted here as dots.
- The most important property of a B+-Tree is that a node fills exactly one disk page, which is why the leafs in the example have space here for other keys.
- This means that a node has a maximum number of entries and in order to use as few disk pages as possible the nodes should be as full as possible, meaning that there is a minimum number of entries that are allowed in a node. This is normally a half of the maximum number of keys.
+The most natural choice for the underlying datastructure of our index are \emph{B+ trees}.
+It consists of inner nodes which store keys and pointer to children nodes and leaf nodes consisting of keys and values.
+Each node fills exactly one disk page enabling efficient storage in a file system.
+Therefore, there is a maximum number of entries that a node can hold -- this number is often called \emph{order} of the tree.
+On the other hand, there is a minimum number of entries that are allowed in a node in order to keep the tree balanced and allocate as few disk pages as possible.
+This lower bound is normally half the order.
 
- Here is an example for inserting the entry with key 8 and some value. We see that 8 is smaller than 13, so we have to insert the entry into this leaf. This node would not fit on a disk page anymore so we have to split it in half.
- And since there are now more children of this parent node, there has to be another key in this node too. So 5 is the key that is copied to the upper level.
- Now the parent page overflows so the node is split in half and one key goes to the upper level. 
- Leading to this tree, which is balanced and the requirements of minimum and maximum entries are still fulfilled (except in the root).
+When inserting or deleting an entry, a node might become \emph{over- or underfull} and the tree has to be recursively rebalanced again.
+If the node is overfull, the node is split into two nodes and the middle key is put into the parent node.
+After deleting an entry and the node becoming underfull, the node is merged with a sibling node. If a merge is not possible, some entries are redistributed from a sibling to the underflowing node.
+It is important to note that insert, delete and rebalancing operations have logarithmic time complexity.
 
- As we have seen re-balancing on insert takes place by using splits. When deleting an entry and the node becomes underfull, the node is merged with a sibling node. If a merge is not possible, some entries are redistributed from a sibling to the underflowing node.
- All operations have logarithmic time complexity.
-
+In ZooDB a user can create an index on an attribute of the object he wants to store to permit fast point and range queries for that attribute.
+Additionally, ZooDB uses indexes internally at several other places.
+It uses for example the ObjectID index to map OIDs to positions on the disk and the Extension Index to map a disk position to the following disk position if an object spans several disk pages. 
 
 \section{Goals \& Challenges}
- We had several goals in this project.
- ZooDB already had an Index, our reimplementation should be significantly faster. The index implementation has a substantial impact on the performance of the whole database
- There should be two types of indices, one key unique and one key-value unique. 
-   The difference is that in a key unique index the first entry will be overwritten, in a key-value unique index, both entries can exist. 
- The index should support range query iterators
- Also, the index should support caching using a buffer manager. Basically the buffer manager is responsible for fetching pages from disk and provide them to the B+-tree.
- And the Index should use prefix-sharing, a technique I am going to explain next.
+ZooDB already had a working index implementation, the goal was that the reimplementation should be significantly faster. 
+Since indexes operate in multiple roles in the database, the speed of the implementation has a substantial impact on the performance of the whole database
+The runtime of the index is largely influenced by disk access, therefore the implementation should minimize the number of nodes nodes.
+Also, nodes should be rarely modified, because in that case they have to be written to disk.
+
+Additionally, the index should support caching via a \emph{buffer manager}. 
+Basically, the buffer manager is responsible for fetching pages from disk and providing them to the tree.
+This allows not loading the whole tree into the memory, but restricting the cache to a fixed size and load and unload pages as needed.
+
+There should be two types of indexes, one is called \emph{key unique} and the other \emph{key-value unique} (or non-unique). 
+Consider for example inserting first the key-value entry $(1,1)$ and subsequently inserting $(1,2)$.
+The difference is that in a key unique index the first entry will be overwritten, but in a key-value unique index both entries remain stored. 
+
+Unfortunately, the new features are costly: prefix-sharing encoding takes some additional time and caching adds another layer of indirection.
+In order to get the best performance out of the code, we dealt with low level implementation optimizations like replacing multiplications and divisions with bit-shifts and reducing polymorphism.
+
+Textbooks do a good job of explaining the big picture of the B+ tree operations but miss some implementation details.
+For example, in their description leafs are linked through sibling pointers. Since ZooDB is a copy-on-write database, sibling pointers are not possible.
+Pages are seldomly stored on the same place twice, so if you store leaf $l_1$, you have to update the sibling pointer of $l_2$, store $l_2$, update the sibling pointer of $l_1$ and so on.
+%Furthermore, textbooks do not cover duplicate entries at all, The operations for key-value unique trees are in many steps different.
+%different order
+%and they do not cover prefix sharing 
 
 \subsection{Prefix sharing}
- Imagine this box represents a node which has some keys. 
- The bit-prefix of all keys is the same, so we can store only the deviations from the prefix.
- You can easily see that we have to store less bits now, meaning that we can pack more keys on a page.
- Prefix sharing introduces a lot of changes to the logic of the BTree. With prefix sharing every node can have a variable number of entries, depending on the actual keys. Previously, the maximum number of entries was the same for all nodes. This means that prefix sharing also affects all re-balancing operations.
+\begin{figure}[ht]
+\center
+\begin{tikzpicture}
+\node[draw,align=left] at (0,0) {00010000\\ 00010100\\ 00010110};
+\draw (0.2,-1) -- (0.2,1);
+\draw [->] (1,0) -- (2,0);
+\end{tikzpicture}
+\begin{tikzpicture}
+\node[draw,align=right] at (0,0) {00010\\ 000\\100\\110};
+\end{tikzpicture}
+\caption{The concept behind prefix sharing}
+\label{fig:prefix-sharing}
+\end{figure}
 
-\subsection{Challenges}
+From the start on, the most important idea to speed up the reimplementation was to make use of \emph{prefix sharing}.
+Imagine the left box in figure \ref{fig:prefix-sharing} represents a node which has some keys shown as bit strings.
+All keys in the node have a prefix in common, so the same information is contained if we store the prefix and the additional bits (box on the right).
+It is easy to see that less bits have to be stored now and therefore more keys can be packed on a page.
+However, prefix sharing entails a lot of changes to the operations of the BTree. 
+Because the prefix, and specifically its length, depends on the actual keys in a node, the maximum number of entries is different for every node.
+This means that prefix sharing also affects all rebalancing operations.
 
- The runtime of the index is dominated by disk access, therefore having fewer pages meaning fewer nodes is preferred.
- And since modified nodes have to written to disk, you want to rarely modify nodes.
- New features are costly, prefix-sharing encoding takes time and caching adds another layer of indirection.
- Textbook algorithms need to be adapted because they are not optimized for our practical scenario in various ways (sibling pointer, different order).
- and they do not cover prefix sharing nor dealing with duplicates. The operations for key-value unique trees are in many steps different.
- And we dealt with low level implementations: replacing multiplications/divisions with bit-shifts and reducing polymorphism
 
 \section{Implementation}
 \subsection{Buffer Manager} % (fold)
@@ -84,7 +111,7 @@ Explain how all accesses to nodes are done through the BufferManager.
 \label{sub:class_diagram}
 
 For the new implementation of the index we have focused on achieving a balance between good design and code that offers good performance. Figure \ref{fig:class-diagram} show the class diagram for ZooDB.  
-\begin{figure}[h]
+\begin{figure}[ht]
 \includegraphics[scale=0.089, center]{ZooDBClassDiagram} 
 \caption{The class diagram for the new index implementation}
 \label{fig:class-diagram}
