@@ -230,78 +230,66 @@ We have support for this (ex: PagedPosIndex) , maybe we can provide some additio
 % 
 % * after remove our tree is more balanced (random, unique, because that was before not so well balanced)
 %     * time of delete not so good
+% pageSize 4096 byte
 \begin{figure}
     \centering
-  \makebox[0pt][c]{
-    \begin{minipage}{0.3\textwidth}
-	\includegraphics[scale=0.30]{images/unique_random_insert_numNodes.pdf} 
-    \caption{unique random insert numNodes}
-	\end{minipage}
-	\hspace{0.05\textwidth}
-	\begin{minipage}{0.3\textwidth}
-	\includegraphics[scale=0.30]{images/unique_random_insert_numNodes.pdf} 
-    \caption{unique random insert numNodes}
-	\end{minipage}
-	\hspace{0.05\textwidth}
-    \begin{minipage}{0.3\textwidth}
-	\includegraphics[scale=0.30]{images/unique_increasing_insert_numNodes.pdf} 
-    \caption{unique increasing insert numNodes}
-	\end{minipage}
+    \makebox[0pt][c]{
+      \begin{minipage}{0.3\textwidth}
+      \includegraphics[scale=0.30]{images/unique_random_insert_numNodes.pdf} 
+      \caption{unique random insert numNodes}
+      \end{minipage}
+      \hspace{0.05\textwidth}
+      \begin{minipage}{0.3\textwidth}
+      \includegraphics[scale=0.30]{images/unique_increasing_insert_numNodes.pdf} 
+      \caption{unique increasing insert numNodes}
+      \end{minipage}
+      \hspace{0.05\textwidth}
+      \begin{minipage}{0.3\textwidth}
+      \includegraphics[scale=0.30]{images/nonunique_random_insert_numNodes.pdf} 
+      \caption{nonunique random insert numNodes}
+      \end{minipage}
     }
 \end{figure}
 \begin{figure}
-	\begin{minipage}{0.45\textwidth}
-	\centering
-	\includegraphics[scale=0.37]{images/nonunique_random_insert_numNodes.pdf} 
-    \caption{nonunique random insert numNodes}
-	\end{minipage}
+    \centering
+    \makebox[0pt][c]{
+      \begin{minipage}{0.3\textwidth}
+      \includegraphics[scale=0.30]{images/unique_increasing_insert.pdf} 
+      \caption{unique increasing insert duration}
+      \end{minipage}
+      \hspace{0.05\textwidth}
+      \begin{minipage}{0.3\textwidth}
+      \includegraphics[scale=0.30]{images/nonunique_random_insert.pdf} 
+      \caption{nonunique random insert duration}
+      \end{minipage}
+      \hspace{0.05\textwidth}
+      \begin{minipage}{0.3\textwidth}
+      \includegraphics[scale=0.30]{images/unique_increasing_write.pdf} 
+      \caption{unique increasing write}
+      \end{minipage}
+    }
 \end{figure}
 
 \begin{figure}
-    \begin{minipage}{0.45\textwidth}
     \centering
-	\includegraphics[scale=0.37]{images/unique_increasing_insert.pdf} 
-    \caption{unique increasing insert duration}
-	\end{minipage}
-	\hspace{0.5cm}
-	\begin{minipage}{0.45\textwidth}
-	\centering
-	\includegraphics[scale=0.37]{images/nonunique_random_insert.pdf} 
-    \caption{nonunique random insert duration}
-	\end{minipage}
+    \makebox[0pt][c]{
+      \begin{minipage}{0.3\textwidth}
+      \includegraphics[scale=0.30]{images/nonunique_random_search.pdf} 
+      \caption{nonunique random search}
+      \end{minipage}
+      \hspace{0.05\textwidth}
+      \begin{minipage}{0.3\textwidth}
+      \includegraphics[scale=0.30]{images/unique_random_remove.pdf} 
+      \caption{unique random remove}
+      \end{minipage}
+      \hspace{0.05\textwidth}
+      \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[scale=0.30]{images/unique_random_remove_numNodes.pdf} 
+      \caption{unique random remove numNodes}
+      \end{minipage}
+    }
 \end{figure}
-
-\begin{figure}
-    \begin{minipage}{0.45\textwidth}
-    \centering
-	\includegraphics[scale=0.37]{images/unique_increasing_write.pdf} 
-    \caption{unique increasing write}
-	\end{minipage}
-	\hspace{0.5cm}
-	\begin{minipage}{0.45\textwidth}
-	\centering
-	\includegraphics[scale=0.37]{images/nonunique_random_search.pdf} 
-    \caption{nonunique random search}
-	\end{minipage}
-\end{figure}
-
-\begin{figure}
-    \begin{minipage}{0.45\textwidth}
-    \centering
-	\includegraphics[scale=0.37]{images/unique_random_remove.pdf} 
-    \caption{unique random remove}
-	\end{minipage}
-	\hspace{0.5cm}
-	\begin{minipage}{0.45\textwidth}
-	\centering
-	\includegraphics[scale=0.37]{images/unique_random_remove_numNodes.pdf} 
-    \caption{unique random remove numNodes}
-	\end{minipage}
-\end{figure}
-
-
-
-
 
 % subsection microbenchmarks (end)
 
