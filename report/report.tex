@@ -209,10 +209,13 @@ We have support for this (ex: PagedPosIndex) , maybe we can provide some additio
 % subsection prefix_sharing_rebalancing (end)
 
 \section{Results}
+\subsection{Microbenchmarks} % (fold)
+\label{sub:microbenchmarks}
 % * random is the worst case scenario
 % * show worst case if we are better, best case if we are worse
 % * search is searching each element
 % * non-unique tree is 10 times duplication
+% * non-unique increasing does not make any sense
 % 
 % * insert unique random same amount of nodes ("unique-random-insert-numNodes")
 % * insert nonunique-random or increasing much less nodes ("nonunique-random-insert-numNodes"), 
@@ -225,9 +228,81 @@ We have support for this (ex: PagedPosIndex) , maybe we can provide some additio
 % 
 % * search? our index worse for nonUniqueIndex-increasing? certainly worse for unique-random, unique increasing worse as well (WHY?),  
 % 
-% * after remove our tree is more balanced (random, unique)
-\subsection{Microbenchmarks} % (fold)
-\label{sub:microbenchmarks}
+% * after remove our tree is more balanced (random, unique, because that was before not so well balanced)
+%     * time of delete not so good
+\begin{figure}
+    \begin{minipage}{0.45\textwidth}
+    \centering
+	\includegraphics[scale=0.37]{images/unique_random_insert_numNodes.pdf} 
+    \caption{unique random insert numNodes}
+	\end{minipage}
+	\hspace{0.5cm}
+	\begin{minipage}{0.45\textwidth}
+	\centering
+	\includegraphics[scale=0.37]{images/unique_random_insert_numNodes.pdf} 
+    \caption{unique random insert numNodes}
+	\end{minipage}
+\end{figure}
+
+\begin{figure}
+    \begin{minipage}{0.45\textwidth}
+    \centering
+	\includegraphics[scale=0.37]{images/unique_increasing_insert_numNodes.pdf} 
+    \caption{unique increasing insert numNodes}
+	\end{minipage}
+	\hspace{0.5cm}
+	\begin{minipage}{0.45\textwidth}
+	\centering
+	\includegraphics[scale=0.37]{images/nonunique_random_insert_numNodes.pdf} 
+    \caption{nonunique random insert numNodes}
+	\end{minipage}
+\end{figure}
+
+\begin{figure}
+    \begin{minipage}{0.45\textwidth}
+    \centering
+	\includegraphics[scale=0.37]{images/unique_increasing_insert.pdf} 
+    \caption{unique increasing insert duration}
+	\end{minipage}
+	\hspace{0.5cm}
+	\begin{minipage}{0.45\textwidth}
+	\centering
+	\includegraphics[scale=0.37]{images/nonunique_random_insert.pdf} 
+    \caption{nonunique random insert duration}
+	\end{minipage}
+\end{figure}
+
+\begin{figure}
+    \begin{minipage}{0.45\textwidth}
+    \centering
+	\includegraphics[scale=0.37]{images/unique_increasing_write.pdf} 
+    \caption{unique increasing write}
+	\end{minipage}
+	\hspace{0.5cm}
+	\begin{minipage}{0.45\textwidth}
+	\centering
+	\includegraphics[scale=0.37]{images/nonunique_random_search.pdf} 
+    \caption{nonunique random search}
+	\end{minipage}
+\end{figure}
+
+\begin{figure}
+    \begin{minipage}{0.45\textwidth}
+    \centering
+	\includegraphics[scale=0.37]{images/unique_random_remove.pdf} 
+    \caption{unique random remove}
+	\end{minipage}
+	\hspace{0.5cm}
+	\begin{minipage}{0.45\textwidth}
+	\centering
+	\includegraphics[scale=0.37]{images/unique_random_remove_numNodes.pdf} 
+    \caption{unique random remove numNodes}
+	\end{minipage}
+\end{figure}
+
+
+
+
 
 % subsection microbenchmarks (end)
 
@@ -245,11 +320,10 @@ We have support for this (ex: PagedPosIndex) , maybe we can provide some additio
 	\includegraphics[scale=0.37]{images/SO_commit_duration.pdf} 
 	\end{minipage}
 	
-	\caption{Left: Comparison of number of index pages for the 2 index implementations \\
+	\caption{Left: Comparison of number of index pages for the 2 index implementations,
 			Right: Evolution of commit times for post objects}
 	\label{fig:so-sizes}
 \end{figure}
 % subsection stackoverflow_import (end)
 % section results (end)
-
 \end{document}
