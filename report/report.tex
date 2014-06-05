@@ -202,10 +202,6 @@ The goal of the redistribute operation is to move a number of keys from a node t
 
 The goal of the merge operation is reduce the number of nodes in the tree by merging an underfull node into either its left or right neighbours. In the case of the prefix sharing, the check that determines if two nodes can be merged is non-trivial, as it involves computing the prefix and the size of the node that would result after the merge. If the new node does not fit into a page file, the merge operation will not be performed.
 
-\subsection{Support for different sizes}
-We have support for this (ex: PagedPosIndex) , maybe we can provide some additional details.
-
-
 % subsection prefix_sharing_rebalancing (end)
 
 \section{Results}
@@ -296,21 +292,29 @@ We have support for this (ex: PagedPosIndex) , maybe we can provide some additio
 \subsection{StackOverflow Import} % (fold)
 \label{sub:stackoverflow_import}
 
-\begin{figure}
+\begin{figure}[h]
     \begin{minipage}{0.45\textwidth}
     \centering
-	\includegraphics[scale=0.37]{images/SO_sizes.pdf} 
+	\includegraphics[scale=0.37]{images/SO_sizes.pdf} 	
+	\caption{Comparison of number of index pages for the two index implementations}
+	\label{fig:so-sizes}
 	\end{minipage}
 	\hspace{0.5cm}
 	\begin{minipage}{0.45\textwidth}
 	\centering
 	\includegraphics[scale=0.37]{images/SO_commit_duration.pdf} 
+	\caption{Evolution of commit times for post objects}
+	\label{fig:so-commits}
 	\end{minipage}
-	
-	\caption{Left: Comparison of number of index pages for the 2 index implementations,
-			Right: Evolution of commit times for post objects}
-	\label{fig:so-sizes}
 \end{figure}
+
+We have tested the performance of the new index implementation on a real world workload consisting of importing StackOverflow data from an XML dump. This data consisted of: 1.3 million users, 10.3 million posts, 13 million comments and 25 million votes. The attribute indexes that have been used for these objects were: 3 key unique indexes and 9 key-value unique indexes. The page size used was 4KB and the final database size was approximately 31 GB. 
+
+Figure \ref{fig:so-sizes} shows the comparison between the number of index pages for different types of database indexes after the import operation was completed. The free space index is not included in the graph as it did not use the prefix sharing implementation. The attribute index was 41.6\% smaller, the OID index was 41.5\% small and the Position index was 23.1\% smaller. The total reduction of index pages was 38.5\%. 
+
+Figure \ref{fig:so-commits} shows the evolution of the commit durations for post objects. Each point on the graph represents the commit of a batch of post objects. For each point, the distance on the horizontal axis represents the number of post objets already stored in the database, while the distance on the vertical axis shows the commit duration. One can notice that for both indices, the commit duration increase as the number of posts that are already stored increases. However, the prefix sharing index presents a slower increase, as the commit times are generally smaller than the commit times for the old index implementation. 
+
+Moreover, the total duration of the import with the new index implementation was 25\% smaller than the duration of the import with the old index. The main reason for this difference is that the number of pages writes is smaller for the new index implementation. As the number of entries stored on a page increases, there is a higher probability that all writes in a transaction are restricted to a smaller number of pages, especially since the data accesses in a database respect a certain data locality.
 % subsection stackoverflow_import (end)
 % section results (end)
 \end{document}
