@@ -180,11 +180,34 @@ The goal of the redistribute operation is to move a number of keys from a node t
 
 The goal of the merge operation is reduce the number of nodes in the tree by merging an underfull node into either its left or right neighbours. In the case of the prefix sharing, the check that determines if two nodes can be merged is non-trivial, as it involves computing the prefix and the size of the node that would result after the merge. If the new node does not fit into a page file, the merge operation will not be performed.
 
-\subsection{Support for different sizes}
-We have support for this (ex: PagedPosIndex) , maybe we can provide some additional details.
-
-
 % subsection prefix_sharing_rebalancing (end)
 
+\section{Experiments} % (fold)
+\label{sec:experiments}
 
+\subsection{Microbenchmarks} % (fold)
+\label{sub:microbenchmarks}
+
+% subsection microbenchmarks (end)
+
+\subsection{StackOverflow Import} % (fold)
+\label{sub:stackoverflow_import}
+
+\begin{figure}
+    \begin{minipage}{0.45\textwidth}
+    \centering
+	\includegraphics[scale=0.37]{images/SO_sizes.pdf} 
+	\end{minipage}
+	\hspace{0.5cm}
+	\begin{minipage}{0.45\textwidth}
+	\centering
+	\includegraphics[scale=0.37]{images/SO_commit_duration.pdf} 
+	\end{minipage}
+	
+	\caption{Left: Comparison of number of index pages for the 2 index implementations \\
+			Right: Evolution of commit times for post objects}
+	\label{fig:so-sizes}
+\end{figure}
+% subsection stackoverflow_import (end)
+% section experiments (end)
 \end{document}
