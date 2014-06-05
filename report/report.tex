@@ -231,26 +231,25 @@ We have support for this (ex: PagedPosIndex) , maybe we can provide some additio
 % * after remove our tree is more balanced (random, unique, because that was before not so well balanced)
 %     * time of delete not so good
 \begin{figure}
-    \begin{minipage}{0.45\textwidth}
     \centering
-	\includegraphics[scale=0.37]{images/unique_random_insert_numNodes.pdf} 
+  \makebox[0pt][c]{
+    \begin{minipage}{0.3\textwidth}
+	\includegraphics[scale=0.30]{images/unique_random_insert_numNodes.pdf} 
     \caption{unique random insert numNodes}
 	\end{minipage}
-	\hspace{0.5cm}
-	\begin{minipage}{0.45\textwidth}
-	\centering
-	\includegraphics[scale=0.37]{images/unique_random_insert_numNodes.pdf} 
+	\hspace{0.05\textwidth}
+	\begin{minipage}{0.3\textwidth}
+	\includegraphics[scale=0.30]{images/unique_random_insert_numNodes.pdf} 
     \caption{unique random insert numNodes}
 	\end{minipage}
-\end{figure}
-
-\begin{figure}
-    \begin{minipage}{0.45\textwidth}
-    \centering
-	\includegraphics[scale=0.37]{images/unique_increasing_insert_numNodes.pdf} 
+	\hspace{0.05\textwidth}
+    \begin{minipage}{0.3\textwidth}
+	\includegraphics[scale=0.30]{images/unique_increasing_insert_numNodes.pdf} 
     \caption{unique increasing insert numNodes}
 	\end{minipage}
-	\hspace{0.5cm}
+    }
+\end{figure}
+\begin{figure}
 	\begin{minipage}{0.45\textwidth}
 	\centering
 	\includegraphics[scale=0.37]{images/nonunique_random_insert_numNodes.pdf} 
