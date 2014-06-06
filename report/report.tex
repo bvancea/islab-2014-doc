@@ -208,9 +208,9 @@ The goal of the merge operation is reduce the number of nodes in the tree by mer
 \subsection{Microbenchmarks} % (fold)
 \label{sub:microbenchmarks}
 These microbenchmarks compare the old index and the reimplementation on artificial data. 
+They in itself do not predict the performance of the whole database.
 Each parameter configuration was rerun ten times. 
 The page size was set to 4096 bytes.
-These tests do not provide info about the performance of the whole database.
 
 Figure \ref{fig:unique_random_insert_numNodes} depicts the number of pages after inserting uniformly random entries in a unique tree.
 It shows that prefix sharing does not give the desired reduction of size.
@@ -220,25 +220,18 @@ that when there is a good chance for a long prefix, the size of the tree is subs
 Increasing entries consist of incremental keys. The random entries for key-value unique indexes are copied 10 times to achieve duplication.
 Naturally, incremental and duplicated keys are exploitable with prefix sharing.
 
-On the other hand, figure \ref{fig:unique_increasing_insert} and \ref{images/nonunique_random_insert.pdf} show that even in the best case inserting is slower with prefix-sharing.
+On the other hand, figure \ref{fig:unique_increasing_insert} and \ref{fig:nonunique_random_insert} show that even in the best case inserting is slower with prefix-sharing.
 
 Figure \ref{fig:unique_increasing_write} depicts the duration of writing the index after inserting. 
 All nodes are dirty and have to be written.
 Surprisingly, the saving in the number of nodes compensates for the duration of applying prefix sharing.
 
+Figure \ref{fig:unique_increasing_search} shows that searching does not benefit from prefix-sharing. These search experiments were conducted by retrieving each key one after another.
 
-random is the worst case scenario
-show worst case if we are better, best case if we are worse
-search is searching each element
-* non-unique tree is 10 times duplication
+To measure the performance of the remove operation we deleted $90\%$ of entries stored in the index.
+Figure \ref{fig:unique_random_remove_numNodes} shows that the index reimplementation is balanced after removing. 
+But proper rebalancing costs time (Figure \ref{fig:unique_increasing_remove}).
 
-* best case: "non-unique-increasing-insert"
-
-* search? our index worse for nonUniqueIndex-increasing? certainly worse for unique-random, unique increasing worse as well (WHY?),  
-
-* after remove our tree is more balanced (random, unique, because that was before not so well balanced)
-    * time of delete not so good
-increasing for unique much! faster in general
 \begin{figure}
     \centering
     \makebox[0pt][c]{
@@ -290,17 +283,20 @@ increasing for unique much! faster in general
       \begin{minipage}{0.3\textwidth}
       \includegraphics[scale=0.30]{images/unique_increasing_search.pdf} 
       \caption{Search increasing entries in a key unique index.}
-      \end{minipage}
-      \hspace{0.05\textwidth}
-      \begin{minipage}{0.3\textwidth}
-      \includegraphics[scale=0.30]{images/unique_increasing_remove.pdf} 
-      \caption{Remove increasing entries from a key unique index.}
+      \label{fig:unique_increasing_search}
       \end{minipage}
       \hspace{0.05\textwidth}
       \begin{minipage}{0.3\textwidth}
       \centering
       \includegraphics[scale=0.30]{images/unique_random_remove_numNodes.pdf} 
       \caption{Remove random entries from a key unique index.}
+      \label{fig:unique_random_remove_numNodes}
+      \end{minipage}
+      \hspace{0.05\textwidth}
+      \begin{minipage}{0.3\textwidth}
+      \includegraphics[scale=0.30]{images/unique_increasing_remove.pdf} 
+      \caption{Remove increasing entries from a key unique index.}
+      \label{fig:unique_increasing_remove}
       \end{minipage}
     }
 \end{figure}
