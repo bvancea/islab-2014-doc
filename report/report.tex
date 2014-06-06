@@ -39,7 +39,7 @@ A database \emph{index} is a data structure for rapidly retrieving and saving ke
 It allows ordered iteration and can be stored in a hard drive file.
 
 The most natural choice for the underlying data-structure of our index are \emph{B+ trees}.
-It consists of inner nodes which store keys and pointers to children nodes and leaf nodes consisting of keys and values.
+A B+ Tree consists of inner nodes which store keys and pointers to children nodes and leaf nodes consisting of keys and values.
 Each node fills exactly one disk page enabling efficient storage in a file system.
 Therefore, there is a maximum number of entries that a node can hold -- this number is often called \emph{order} of the tree.
 On the other hand, there is a minimum number of entries that are allowed in a node in order to keep the tree balanced and allocate as few disk pages as possible.
@@ -48,11 +48,11 @@ This lower bound is normally half the order.
 When inserting or deleting an entry, a node might become \emph{over- or underfull} and the tree has to be recursively rebalanced.
 If the node is overfull, the node is split into two nodes and the middle key is put into the parent node.
 After deleting an entry and the node becoming underfull, the node is merged with a sibling node. If a merge is not possible, some entries are redistributed from a sibling to the underflowing node.
-It is important to note that insert, delete and rebalancing operations have logarithmic time complexity.
+It is important to note that insert, delete and re-balancing operations have logarithmic time complexity.
 
 In ZooDB a user can create an index on an attribute of the object he wants to store to permit fast point and range queries for that attribute.
 Additionally, ZooDB uses indexes internally at several other places.
-It uses for example an ObjectID index to map OIDs to positions on the disk and an Extension Index to map a disk position to the following disk position if an object spans several disk pages. 
+It uses, for example, an ObjectID index to map OIDs to positions on the disk and an Extension Index to map a disk position to the following disk position if an object spans several disk pages. 
 
 \section{Goals \& Challenges}
 ZooDB already had a working index implementation, the goal was that the reimplementation should be significantly faster. 
@@ -73,7 +73,7 @@ In order to get the best performance out of the code, we dealt with low level im
 
 Textbooks do a good job of explaining the big picture of the B+ tree operations but miss some implementation details.
 For example, in their description leafs are linked through sibling pointers. Since ZooDB is a copy-on-write database, sibling pointers are not possible.
-Pages are seldomly stored on the same place twice, so if you store leaf $l_1$, you have to update the sibling pointer of $l_2$, store $l_2$, update the sibling pointer of $l_1$, store $l_1$ and so on.
+Pages are seldom stored on the same place twice, so if you store leaf $l_1$, you have to update the sibling pointer of $l_2$, store $l_2$, update the sibling pointer of $l_1$, store $l_1$ and so on.
 %Furthermore, textbooks do not cover duplicate entries at all, The operations for key-value unique trees are in many steps different.
 %different order
 %and they do not cover prefix sharing 
@@ -114,13 +114,13 @@ For the new implementation of the index we have focused on achieving a balance b
 \end{figure}
 
 % subsection subsection_name (end)
-The \textbf{BTree} class implements all the logic for the B+ tree operations, including the re-balancing operations. The operations implemented operate on instances of the \textbf{BTreeNode} class. The \textbf{BTreeNode} abstract class contains the logic for a B+ tree node. To reduce the usage of polymorphism, we have opted not to implement different classes for leaf, inner or root nodes. The \textbf{BTreeNode} class has additional boolean fields, \textit{isLeaf} and \textit{isRoot} that are used to describe the position of a node within the tree. This choice reduces the size of the inheritance hierarchy, however in the cases where leaf nodes have to be treated differently than inner nodes we have added additional if statements to separate the behavior. 
+The \textbf{BTree} class implements all the logic for the B+ tree operations, including the re-balancing operations. The operations implemented operate on instances of the \textbf{BTreeNode} class. The \textbf{BTreeNode} abstract class contains the logic for a B+ tree node. To reduce the usage of polymorphism, we have opted not to implement different classes for leaf, inner or root nodes. The \textbf{BTreeNode} class has additional boolean fields, \textit{isLeaf} and \textit{isRoot} that are used to describe the position of a node within the tree. This choice reduces the size of the inheritance hierarchy, however in the cases where leaf nodes have to be treated differently than inner nodes we have added additional if statements to handle the different treatment of nodes. 
 
-The \textbf{BTreeNode} class holds no information about the child nodes of the node. However, this class exposes a number of abstract child access methods, like \textit{getChild()} or \textit{getChildren()}. These methods are implemented by the \textbf{PagedBTreeNode} class. Additionally, the \textbf{BTreeNode} class does not hold any information to differentiate between nodes belonging to unique and non-unique trees. All of the methods of for the \textbf{BTree} and \textbf{BTreeNode} classes which need to have different behaviour for unique and non-unique trees are abstract methods and will be overridden by the \textbf{UniquePagedBTreeNode} and \textbf{NonUniquePagedBTreeNode} classes.
+The \textbf{BTreeNode} class holds no information about the child nodes of the node. However, this class exposes a number of abstract child access methods, like \textit{getChild()} or \textit{getChildren()}. These methods are implemented by the \textbf{PagedBTreeNode} class. Additionally, the \textbf{BTreeNode} class does not hold any information to differentiate between nodes belonging to unique and non-unique trees. All of the methods of the \textbf{BTree} and \textbf{BTreeNode} classes which need to have different behaviour for unique and non-unique trees are abstract methods and will be overridden by the \textbf{UniquePagedBTreeNode} and \textbf{NonUniquePagedBTreeNode} classes.
 
-The \textbf{PagedBTreeNode} holds the logic responsible for loading nodes from storage. It extends the \textbf{BTreeNode} and contains a reference to the \textbf{BufferManager} associated with the tree. Each instance of \textbf{PagedBTreeNode} contains a \textit{page id}, which is given assigned by the \textbf{BufferManager} upon saving. The \textbf{PagedBTree} node contains information about the children of a node. We have opted to store an array consisting of the page ids of the child nodes, instead of an array of hard references to the PagedBTreeNodes. Additionally, we store an array of weak references to the \textbf{PagedBTreeNode} objects. When a new node is loaded from disk, the child array is populated with the page ids of its child nodes while the array of weak references to the children is initialized to an array of null references. The first access to a child node will retrieve the \textbf{PagedBTreeNode} instance from the \textbf{BufferManager} and populate the weak references corresponding to its page id. Subsequent accesses to the child will use the weak reference, provided the child objects is not reclaimed by the garbage collector. If any of the children nodes are reclaimed by the garbage collector, they will be retrieved from storage on the next access and the weak reference will be repopulated.
+The \textbf{PagedBTreeNode} holds the logic responsible for loading nodes from storage. It extends the \textbf{BTreeNode} and contains a reference to the \textbf{BufferManager} associated with the tree. Each instance of \textbf{PagedBTreeNode} contains a \textit{page id}, which is assigned by the \textbf{BufferManager} upon saving. The \textbf{PagedBTree} node contains information about the children of a node. We have opted to store an array consisting of the page ids of the child nodes, instead of an array of hard references to the nodes. Additionally, we store an array of weak references to the \textbf{PagedBTreeNode} objects. When a new node is loaded from disk, the child array is populated with the page ids of its child nodes while the array of weak references to the children is initialized to an array of null references. The first access to a child node will retrieve the \textbf{PagedBTreeNode} instance from the \textbf{BufferManager} and populate the weak reference corresponding to its page id. Subsequent accesses to the child will use the weak reference, provided the child object is not reclaimed by the garbage collector. If any of the children nodes are reclaimed by the garbage collector, they will be retrieved from storage on the next access and the weak references will be repopulated.
 
-The \textbf{UniquePagedBTreeNode} and \textbf{NonUniquePagedBTreeNode} classes extend the \textbf{PagedBTreeNode} class and contain data and behaviour specific to nodes belonging to unique and non-unique trees. For example, in case the non-unique nodes, inner nodes cotains the both a key array and a value array. This leads to different behaviour for unique and non-unique nodes during operations like peforming binary searches, shifting node entries to the left or right or copying node entries from one node to the other. This different behaviour is implemented in the aforementioned classes: \textbf{UniquePagedBTreeNode} and \textbf{NonUniquePagedBTreeNode}. 
+The \textbf{UniquePagedBTreeNode} and \textbf{NonUniquePagedBTreeNode} classes extend the \textbf{PagedBTreeNode} class and contain data and behaviour specific to nodes belonging to unique and non-unique trees. For example, in case the non-unique nodes, inner nodes contain the both a key array and a value array. This leads to different behaviour for unique and non-unique nodes during operations like performing binary searches, shifting node entries to the left or right or copying node entries from one node to the other. This different behaviour is implemented in the aforementioned classes: \textbf{UniquePagedBTreeNode} and \textbf{NonUniquePagedBTreeNode}. 
 
 The tree iterators are implemented by the \textbf{AscendingBTreeLeafEntryIterator} and \textbf{DescendingBTreeLeafEntryIterator} classes. The shared behaviour for these classes is implemented in the abstract class \textbf{BTreeLeafEntryIterator}. Because we have opted not to store information about the parent nodes, neither in the form of page ids or references, the iteration process requires the use of a stack to store the current position in the tree. The iterators do not support \textbf{Copy on Write} and are invalidated when the B+ tree is modified. 
 
@@ -131,7 +131,7 @@ The prefix sharing logic has been implemented in the \textbf{PrefixSharingHelper
 
 \subsection{Buffer Manager} % (fold)
 \label{sub:buffer_manager}
-The buffer manager is responsible for reading and writing \textbf{PagedBTreeNodes} to the \textbf{StorageChannel}.
+The buffer manager is responsible for reading and writing \textbf{PagedBTreeNode} objects from and to the \textbf{StorageChannel}.
 
 The buffer manager instance is created in the constructor of a \textbf{BTreeIndex}. 
 Its only direct function for the index is to ensure that all its content is written to disk when \texttt{write} is called on the index.
@@ -157,28 +157,28 @@ This instructs the buffer manager to delete the node from its memory buffers and
 
 \subsection{B+ Tree Operations} % (fold)
 \label{sub:b_tree_operations}
-One important implementation choice we have made is to store the key array unencoded in memory and to perform the prefix sharing encoding only when nodes are written to disk. While this approach increase the size of the node pages when loaded in memory, the advantage of this choice is that the costly key array encoding is only performed once, even if the node is modified multiple times before it is written to disk. 
+One important implementation choice we have made is to store the key array un-encoded in memory and to perform the prefix sharing encoding only when nodes are written to disk. While this approach increases the size of the node pages when loaded in memory, the advantage of this choice is that the costly key array encoding is only performed once, even if the node is modified multiple times before it is written to disk. 
 
-Another advantage of having the key array unencoded in memory is that the search operations is similar to the search operation run on a traditional B+ tree. 
+Another advantage of having the key array un-encoded in memory is that the search operations is similar to the search operation run on a traditional B+ tree. 
 
-For the insert operation, if the new key has been inserted in the first or the last position of the key array, the prefix for the node has to be recomputed. The overflow is handled as follows:
+For the insert operation, if the new key has been inserted in the first or the last position of the key array, the prefix for the node has to be recomputed. The overflow in case of the insert operation is handled as follows:
 \begin{enumerate}
 	\item The algorithm first attempts to redistribute some keys from the current node to its left sibling. We do this to delay the moment when a new node is created. The exact redistribution process is described in the next section.
-	\item If that is not possible, the current node is split into 2 nodes of equal size. One important difference appears in how the new tree handles keys moving from one node to the other. In a traditional B+ tree, the max number of keys on a node is fixed, which makes it very efficient to perform operations like splitting a node into 2 nodes of equal sizes. In case of prefix sharing, the first half of the keys could have a very different prefix size compared to the second half, which would lead to having 2 nodes with very different sizes. To avoid this, we perform a binary search to compute the optimal number of keys to move to the new node.
+	\item If that is not possible, the current node is split into 2 nodes of equal size. One important difference appears in how the new tree handles keys moving from one node to the other. In a traditional B+ tree, the maximum number of keys on a node is fixed, which makes it very efficient to perform operations like splitting a node into 2 nodes of equal sizes. In case of prefix sharing, the first half of the keys could have a very different prefix size compared to the second half, which would lead to having 2 nodes with very different sizes. To avoid this, we perform a binary search to compute the optimal number of keys to move to the new node.
 \end{enumerate}
 	
 In the case of the delete operation, the removal of an entry from the key array can cause the prefix to change. If the node from which the deletion has been performed is now underfull, a re-balancing procedure begin. The steps for the re-balancing are the following:
 \begin{enumerate}
 	\item In the first step, the algorithm first checks if the current node can be merged with \textbf{either} its left or its right neighbour. 
 	\item If the merge at the previous step is not possible, the next step is to check whether the keys from the current node can be split between its left sibling \textbf{and} its right sibling. While this approach would involve in marking both the left and right siblings as dirty, the current node can then be removed.
-	\item If the previous operation was not possible, some keys are redistributed from either the left or the right sibling. As a note, the success of the rebalancing operations is not guaranteed and the current node could remain underfull after the re-balance operation. However, we observed that this behaviour does not happen very often and does not have a significant impact on the tree size.
+	\item If the previous operation was not possible, some keys are redistributed from either the left or the right sibling. As a note, the success of the re-balancing operations is not guaranteed and the current node could remain underfull after the re-balance operation. However, we observed that this behaviour does not happen very often and does not have a significant impact on the tree size.
 \end{enumerate}
 
 % subsection b_tree_operations (end)
 
 \subsection{Prefix Sharing Implementation} % (fold)
 \label{sub:prefix_sharing_rebalancing}
-When storing a node, the key array of a node is encoded into an array of bytes according to the common prefix. The encoding was performed at the bit-level, meaning that both the binary prefix and the deviations of elements from the prefix are computed as arbitrary number of bits. This means that if the binary prefix has length 9, it can be store in 2 bytes. Moreover, the remaining 7 bits from the second byte can be used to store part of the deviation of the fist array element. Other available alternatives for encoding would have been to compute both the prefix and the deviations as multiples of 8 and ensure that each encoded byte contains only prefix bits or deviation bits. We have chosen the bit-level encoding because it offers the best space reduction.
+When storing a node, the key array of a node is encoded into an array of bytes according to the common prefix. The encoding was performed at the bit-level, meaning that both the binary prefix and the deviations of elements from the prefix are computed as arbitrary number of bits. This means that if the binary prefix has length 9, it can be stored in 2 bytes: the first 8 bits into the first byte and the last bit in the second byte. Moreover, the remaining 7 bits from the second byte can be used to store part of the deviation of the fist array element. Other available alternatives for encoding would have been to compute both the prefix and the deviations as multiples of 8 and ensure that each encoded byte contains only prefix bits or deviation bits. We have chosen the bit-level encoding because it offers the best space reduction.
 
 We based the prefix sharing algorithms on the following observations about the binary prefix for an array of \textbf{sorted} integer elements.
 \begin{itemize}
@@ -191,51 +191,25 @@ The main purpose of the split operation is to split the keys of a node that is o
 \begin{enumerate}
 	\item Compute the binary prefixes and sizes for the nodes that would result if the current number of keys would be moved to a 
 	new node. 
-	\item Compute the difference between the node sizes and if the current split is the best encountered so far, store the current number of keys to move and the size difference.
+	\item Compute the difference between the node sizes and, if the current split is the best encountered so far, store the current number of keys to move and the size difference.
 	\item If the size of the current node after the simulated key move is smaller than the size of the new node, decrease the number of keys to move. Otherwise, increase the number of keys to move.
 \end{enumerate}
 In the end, the split algorithm returns the number of keys to move corresponding to the minimum difference in size between the current and new node.
 
-A special case of the split operation is when the current node overflows and we would like to check if the key array can be equally split between the left and right siblings. In that case, the binary search is modified to search for number of keys to move to the right node, the remaining keys being moved to the left node. An additional optimization that we have added in that case is to stop at the first split that results in both left and right nodes having a valid size.
+A special case of the split operation is when the current node overflows and we would like to check if the key array can be equally split between the left and right siblings of the current node. This operation is tried during the re-balancing of the tree after a delete operation. In that case, the binary search is modified to search for number of keys to move to the right node, the remaining keys being moved to the left node. An additional optimization that we have added in that case is to stop at the first split that results in both left and right nodes having a valid size.
 
 The goal of the merge operation is reduce the number of nodes in the tree by merging an underfull node into either its left or right neighbours. In the case of the prefix sharing, the check that determines if two nodes can be merged is non-trivial, as it involves computing the prefix and the size of the node that would result after the merge. If the new node does not fit into a page file, the merge operation will not be performed.
 
-The goal of the redistribute operation is to move a number of keys from a node that is not underfull to an underfull node. It is desirable that at the end of the split operation, neither of the nodes be underfull. If that is not possible, the redistribution fails and no keys are moved. The number of keys to move to the underfull node is computed in a similar manner to the split operation, using a binary search. Therefore, at each step, the prefixes and the sizes of the node that would result after the operation are computed. The binary search stops at the first split that results into two nodes of valid sizes.
+The goal of the redistribute operation is to move a number of keys from a node that is not underfull to an underfull node. It is desirable that at the end of the redistribute operation, neither of the nodes be underfull. If that is not possible, the redistribution fails and no keys are moved. The number of keys to move to the underfull node is computed in a similar manner to the split operation, using a binary search. Therefore, at each step, the prefixes and the sizes of the node that would result after the operation are computed. The binary search stops at the first split that results into two nodes of valid sizes.
 
 % subsection prefix_sharing_rebalancing (end)
 
 \section{Results}
 \subsection{Microbenchmarks} % (fold)
 \label{sub:microbenchmarks}
-These microbenchmarks compare the old index and the reimplementation on artificial data. 
-They in itself do not predict the performance of the whole database.
-Each parameter configuration was rerun ten times. 
-The page size was set to 4096 bytes.
-Except for the write operation, the experiments ran entirely in memory.
 
-Figure \ref{fig:unique_random_insert_numNodes} depicts the number of pages after inserting uniformly random entries in a unique tree.
-It shows that prefix sharing does not give the desired reduction of size.
-The probability of uniformly random entries having a long prefix is too small to achieve efficient encodings.
-However, figure \ref{fig:unique_increasing_insert_numNodes} and \ref{fig:nonunique_random_insert_numNodes} demonstrate 
-that when there is a good chance for a long prefix, the size of the tree is substantially smaller.
-Increasing entries consist of incremental keys. The random entries for key-value unique indexes are copied 10 times to achieve duplication.
-Naturally, incremental and duplicated keys are exploitable with prefix sharing.
 
-On the other hand, figure \ref{fig:unique_increasing_insert} and \ref{fig:nonunique_random_insert} show that even in the best case inserting is slower with prefix-sharing. 
-This effect most likely comes from the cost of determining a proper split with prefix sharing.
-
-Figure \ref{fig:unique_increasing_write} depicts the duration of writing the index after inserting. 
-All nodes are dirty and have to be written.
-Surprisingly, the saving in the number of nodes compensates for the duration of applying prefix sharing.
-
-Figure \ref{fig:unique_increasing_search} shows that searching does not benefit from prefix-sharing. These search experiments were conducted by retrieving each key one after another.
-
-To measure the performance of the remove operation we deleted $90\%$ of entries stored in the index.
-Figure \ref{fig:unique_random_remove_numNodes} shows that the index reimplementation is balanced after removing. 
-But proper rebalancing costs time (figure \ref{fig:unique_increasing_remove}). 
-Even more so with prefix sharing, because deciding if a merge is possible or the number of entries to redistribute involves additional steps.
-
-\begin{figure}
+\begin{figure}[p]
     \centering
     \makebox[0pt][c]{
       \begin{minipage}{0.3\textwidth}
@@ -257,7 +231,7 @@ Even more so with prefix sharing, because deciding if a merge is possible or the
       \end{minipage}
     }
 \end{figure}
-\begin{figure}
+\begin{figure}[p]
     \centering
     \makebox[0pt][c]{
       \begin{minipage}{0.3\textwidth}
@@ -279,8 +253,7 @@ Even more so with prefix sharing, because deciding if a merge is possible or the
       \end{minipage}
     }
 \end{figure}
-
-\begin{figure}
+\begin{figure}[p]
     \centering
     \makebox[0pt][c]{
       \begin{minipage}{0.3\textwidth}
@@ -303,6 +276,35 @@ Even more so with prefix sharing, because deciding if a merge is possible or the
       \end{minipage}
     }
 \end{figure}
+
+These microbenchmarks compare the old index and the reimplementation on artificial data. 
+They in itself do not predict the performance of the whole database.
+Each parameter configuration was rerun ten times. 
+The page size was set to 4096 bytes.
+Except for the write operation, the experiments ran entirely in memory.
+
+Figure \ref{fig:unique_random_insert_numNodes} depicts the number of pages after inserting uniformly random entries in a unique tree.
+It shows that prefix sharing does not give the desired reduction of size.
+The probability of uniformly random entries having a long prefix is too small to achieve efficient encodings.
+However, figure \ref{fig:unique_increasing_insert_numNodes} and \ref{fig:nonunique_random_insert_numNodes} demonstrate 
+that when there is a good chance for a long prefix, the size of the tree is substantially smaller.
+Increasing entries consist of incremental keys. The random entries for key-value unique indexes are copied 10 times to achieve duplication.
+Naturally, incremental and duplicated keys are exploitable with prefix sharing.
+
+On the other hand, figure \ref{fig:unique_increasing_insert} and \ref{fig:nonunique_random_insert} show that even in the best case inserting is slower with prefix-sharing. 
+This effect most likely comes from the cost of determining a proper split with prefix sharing.
+
+Figure \ref{fig:unique_increasing_write} depicts the duration of writing the index after inserting. 
+All nodes are dirty and have to be written.
+Surprisingly, the saving in the number of nodes compensates for the duration of applying prefix sharing.
+
+Figure \ref{fig:unique_increasing_search} shows that searching does not benefit from prefix-sharing. These search experiments were conducted by retrieving each key one after another. The retrieval consisted in creating an range iterator for the key to be searched. The difference in response time is attributed to the fact that in the new implementation, the iteration is implemented using a stack of ancestor nodes.
+
+To measure the performance of the remove operation we deleted $90\%$ of entries stored in the index.
+Figure \ref{fig:unique_random_remove_numNodes} shows that the index reimplementation is balanced after removing. 
+But proper rebalancing costs time (figure \ref{fig:unique_increasing_remove}). 
+Even more so with prefix sharing, because deciding if a merge is possible or the number of entries to redistribute involves additional steps.
+
 
 % subsection microbenchmarks (end)
 
@@ -327,7 +329,7 @@ Even more so with prefix sharing, because deciding if a merge is possible or the
 
 We tested the performance of the new index implementation on a real world workload consisting of importing StackOverflow data from an XML dump. This data consisted of: 1.3 million users, 10.3 million posts, 13 million comments and 25 million votes. The attribute indexes that have been used for these objects were: 3 key unique indexes and 9 key-value unique indexes. The page size used was 4KB and the final database size was approximately 31 GB. 
 
-Figure \ref{fig:so-sizes} shows the comparison between the number of index pages for different types of database indexes after the import operation was completed. The free space index is not included in the graph as it did not use the prefix sharing implementation. The attribute index was 41.6\% smaller, the OID index was 41.5\% small and the Position index was 23.1\% smaller. The total reduction of index pages was 38.5\%. 
+Figure \ref{fig:so-sizes} shows the comparison between the number of index pages for different types of database indexes after the import operation was completed. The free space index is not included in the graph as it did not use the prefix sharing implementation. The attribute index was 41.6\% smaller, the OID index was 41.5\% smaller and the Position index was 23.1\% smaller. The total reduction of index pages was 38.5\%. 
 
 Figure \ref{fig:so-commits} shows the evolution of the commit durations for post objects. Each point on the graph represents the commit of a batch of post objects. For each point, the distance on the horizontal axis represents the number of post objects already stored in the database, while the distance on the vertical axis shows the commit duration. One can notice that for both indices, the commit duration increase as the number of posts that are already stored increases. However, the prefix sharing index presents a slower increase, as the commit times are generally smaller than the commit times for the old index implementation. 
 
