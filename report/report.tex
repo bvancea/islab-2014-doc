@@ -198,9 +198,9 @@ In the end, the split algorithm returns the number of keys to move corresponding
 
 A special case of the split operation is when the current node overflows and we would like to check if the key array can be equally split between the left and right siblings. In that case, the binary search is modified to search for number of keys to move to the right node, the remaining keys being moved to the left node. An additional optimization that we have added in that case is to stop at the first split that results in both left and right nodes having a valid size.
 
-The goal of the redistribute operation is to move a number of keys from a node that is not underfull to an underfull node. It is desirable that at the end of the split operation, neither of the nodes be underfull. If that is not possible, the redistribution fails and no keys are moved. The number of keys to move to the underfull node is computed in a similar manner to the split operation, using a binary search. Therefore, at each step, the prefixes and the sizes of the node that would result after the operation are computed. The binary search stops at the first split that results into two nodes of valid sizes.
-
 The goal of the merge operation is reduce the number of nodes in the tree by merging an underfull node into either its left or right neighbours. In the case of the prefix sharing, the check that determines if two nodes can be merged is non-trivial, as it involves computing the prefix and the size of the node that would result after the merge. If the new node does not fit into a page file, the merge operation will not be performed.
+
+The goal of the redistribute operation is to move a number of keys from a node that is not underfull to an underfull node. It is desirable that at the end of the split operation, neither of the nodes be underfull. If that is not possible, the redistribution fails and no keys are moved. The number of keys to move to the underfull node is computed in a similar manner to the split operation, using a binary search. Therefore, at each step, the prefixes and the sizes of the node that would result after the operation are computed. The binary search stops at the first split that results into two nodes of valid sizes.
 
 % subsection prefix_sharing_rebalancing (end)
 
@@ -211,6 +211,7 @@ These microbenchmarks compare the old index and the reimplementation on artifici
 They in itself do not predict the performance of the whole database.
 Each parameter configuration was rerun ten times. 
 The page size was set to 4096 bytes.
+Except for the write operation, the experiments ran entirely in memory.
 
 Figure \ref{fig:unique_random_insert_numNodes} depicts the number of pages after inserting uniformly random entries in a unique tree.
 It shows that prefix sharing does not give the desired reduction of size.
@@ -220,7 +221,8 @@ that when there is a good chance for a long prefix, the size of the tree is subs
 Increasing entries consist of incremental keys. The random entries for key-value unique indexes are copied 10 times to achieve duplication.
 Naturally, incremental and duplicated keys are exploitable with prefix sharing.
 
-On the other hand, figure \ref{fig:unique_increasing_insert} and \ref{fig:nonunique_random_insert} show that even in the best case inserting is slower with prefix-sharing.
+On the other hand, figure \ref{fig:unique_increasing_insert} and \ref{fig:nonunique_random_insert} show that even in the best case inserting is slower with prefix-sharing. 
+This effect most likely comes from the cost of determining a proper split with prefix sharing.
 
 Figure \ref{fig:unique_increasing_write} depicts the duration of writing the index after inserting. 
 All nodes are dirty and have to be written.
@@ -230,7 +232,8 @@ Figure \ref{fig:unique_increasing_search} shows that searching does not benefit 
 
 To measure the performance of the remove operation we deleted $90\%$ of entries stored in the index.
 Figure \ref{fig:unique_random_remove_numNodes} shows that the index reimplementation is balanced after removing. 
-But proper rebalancing costs time (Figure \ref{fig:unique_increasing_remove}).
+But proper rebalancing costs time (Figure \ref{fig:unique_increasing_remove}). 
+Even more so with prefix sharing, because deciding if a merge is possible or the number of entries to redistribute involves additional steps.
 
 \begin{figure}
     \centering
@@ -335,6 +338,8 @@ Moreover, the total duration of the import with the new index implementation was
 \section{Summary} % (fold)
 \label{sec:summary}
 
-The report has presented the new index implementation for ZooDB. The main additions in the new implementation are the buffer manager and the encoding of the keys using the shared binary prefix. The buffer manager abstracts the access to disk pages and can be configured as a cache of arbitrary size. Prefix sharing offers a trade-off between the speed of index update operations, like insert and delete, and the space saved as a result of packing more key-value entries into a single node. The microbenchmarks show that each single index update operation is slower on the prefix-sharing index. However, the microbenchmarks do not properly predict the behaviour of the database using the new index, as the space savings offered by prefix sharing result in less page IO operations. Thus, the new index performs good in practice, especially in larger databases like the StackOverflow import database.
+The report has presented the new index implementation for ZooDB. The main additions in the new implementation are the buffer manager and the encoding of the keys using the shared binary prefix. The buffer manager abstracts the access to disk pages and can be configured as a cache of arbitrary size. Prefix sharing offers a trade-off between the speed of index update operations, like insert and delete, and the space saved as a result of packing more key-value entries into a single node. The microbenchmarks show that each single index update operation is slower on the prefix-sharing index. However, the microbenchmarks do not properly predict the behaviour of the database using the new index, as the space savings offered by prefix sharing result in less page IO operations. Thus, the new index performs good in practice, especially in larger databases. 
+A direct comparison of database speed using the PolePosition benchmark showed similar results. 
+But we have seen that the StackOverflow import significantly benefited from the index reimplementation.
 % section summary (end)
 \end{document}
