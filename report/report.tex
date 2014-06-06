@@ -232,7 +232,7 @@ Figure \ref{fig:unique_increasing_search} shows that searching does not benefit 
 
 To measure the performance of the remove operation we deleted $90\%$ of entries stored in the index.
 Figure \ref{fig:unique_random_remove_numNodes} shows that the index reimplementation is balanced after removing. 
-But proper rebalancing costs time (Figure \ref{fig:unique_increasing_remove}). 
+But proper rebalancing costs time (figure \ref{fig:unique_increasing_remove}). 
 Even more so with prefix sharing, because deciding if a merge is possible or the number of entries to redistribute involves additional steps.
 
 \begin{figure}
@@ -338,7 +338,7 @@ Moreover, the total duration of the import with the new index implementation was
 \section{Summary} % (fold)
 \label{sec:summary}
 
-The report has presented the new index implementation for ZooDB. The main additions in the new implementation are the buffer manager and the encoding of the keys using the shared binary prefix. The buffer manager abstracts the access to disk pages and can be configured as a cache of arbitrary size. Prefix sharing offers a trade-off between the speed of index update operations, like insert and delete, and the space saved as a result of packing more key-value entries into a single node. The microbenchmarks show that each single index update operation is slower on the prefix-sharing index. However, the microbenchmarks do not properly predict the behaviour of the database using the new index, as the space savings offered by prefix sharing result in less page IO operations. Thus, the new index performs good in practice, especially in larger databases. 
+The report has presented the new index implementation for ZooDB. The main additions in the new implementation are the buffer manager and the encoding of the keys using the shared binary prefix. The buffer manager abstracts the access to disk pages and can be configured as a cache of arbitrary size. Prefix sharing offers a trade-off between the speed of index update operations, like insert and delete, and the space saved as a result of packing more key-value entries into a single node. The microbenchmarks show that each single index update operation is slower on the prefix-sharing index. However, the microbenchmarks do not properly predict the behaviour of the database using the new index, as the space savings offered by prefix sharing result in less page I/O operations. Thus, the new index performs good in practice, especially in larger databases. 
 A direct comparison of database speed using the PolePosition benchmark showed similar results. 
 But we have seen that the StackOverflow import significantly benefited from the index reimplementation.
 % section summary (end)
