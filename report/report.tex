@@ -38,14 +38,14 @@ The most important selling point of ZooDB is its speed. It is up to four times f
 A database \emph{index} is a data structure for rapidly retrieving and saving key-value entries. 
 It allows ordered iteration and can be stored in a hard drive file.
 
-The most natural choice for the underlying datastructure of our index are \emph{B+ trees}.
-It consists of inner nodes which store keys and pointer to children nodes and leaf nodes consisting of keys and values.
+The most natural choice for the underlying data-structure of our index are \emph{B+ trees}.
+It consists of inner nodes which store keys and pointers to children nodes and leaf nodes consisting of keys and values.
 Each node fills exactly one disk page enabling efficient storage in a file system.
 Therefore, there is a maximum number of entries that a node can hold -- this number is often called \emph{order} of the tree.
 On the other hand, there is a minimum number of entries that are allowed in a node in order to keep the tree balanced and allocate as few disk pages as possible.
 This lower bound is normally half the order.
 
-When inserting or deleting an entry, a node might become \emph{over- or underfull} and the tree has to be recursively rebalanced again.
+When inserting or deleting an entry, a node might become \emph{over- or underfull} and the tree has to be recursively rebalanced.
 If the node is overfull, the node is split into two nodes and the middle key is put into the parent node.
 After deleting an entry and the node becoming underfull, the node is merged with a sibling node. If a merge is not possible, some entries are redistributed from a sibling to the underflowing node.
 It is important to note that insert, delete and rebalancing operations have logarithmic time complexity.
@@ -256,4 +256,9 @@ Moreover, the total duration of the import with the new index implementation was
 % subsection stackoverflow_import (end)
 % section results (end)
 
+\section{Summary} % (fold)
+\label{sec:summary}
+
+The report has presented 
+% section summary (end)
 \end{document}
